@@ -6,4 +6,4 @@
 **/build
 **/robots.txt
 node_modules
-
+**/.env
