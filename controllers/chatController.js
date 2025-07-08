@@ -18,7 +18,7 @@ export const createGroupChat = asyncHandler(async (req, res, next) => {
         if (!existingGroupChat) {
             const dispute = await Dispute.findOne({ agreementId });
             const agreement = await Agreement.findOne({ agreementId });
-
+            
             groupChat = await GroupChat.create({
                 groupId: agreementId,
                 groupName: `Dispute Resolve - ${agreement.projectTitle}`,
@@ -38,9 +38,82 @@ export const createGroupChat = asyncHandler(async (req, res, next) => {
     }
 });
 
+// export const getChatList = asyncHandler(async (req, res, next) => {
+//     const userId = req.query.connectedWalletId;
+    
+//     try {
+//         const chatList = await Chat.aggregate([
+//             {
+//                 $match: {
+//                     $or: [
+//                         { sender: userId },
+//                         { receiver: userId },
+//                         { groupMember: userId },
+//                     ],
+//                 },
+//             },
+//             {
+//                 $group: {
+//                     _id: {
+//                         $cond: {
+//                             if: { $eq: ["$sender", userId] }, // If the logged-in user is the sender
+//                             then: "$receiver", // Group by receiver (the other person)
+//                             else: "$sender", // If the logged-in user is the receiver
+//                         },
+//                     },
+//                     lastMessage: { $last: "$$ROOT" }, // Get the last message in the conversation
+//                     unreadCount: {
+//                         $sum: {
+//                             $cond: [
+//                                 { $eq: ["$isGroup", true] }, // If it's a group chat
+//                                 {
+//                                     $cond: {
+//                                         if: {
+//                                             $in: [userId, "$groupMsgReadBy"], // Check if userId is in the groupMsgReadBy array
+//                                         },
+//                                         then: 0, // If user has read the message, do nothing
+//                                         else: 1, // If user hasn't read, increment the unread count
+//                                     },
+//                                 },
+//                                 {
+//                                     $cond: {
+//                                         if: { $eq: ["$read", false] }, // If it's a personal chat and the message is unread
+//                                         then: 1,
+//                                         else: 0,
+//                                     },
+//                                 },
+//                             ],
+//                         },
+//                     },
+//                 },
+//             },
+//             {
+//                 $project: {
+//                     userId: "$_id",
+//                     message: "$lastMessage.msg",
+//                     image: "$lastMessage.image",
+//                     document: "$lastMessage.document",
+//                     isGroup: "$lastMessage.isGroup",
+//                     groupName: "$lastMessage.groupName",
+//                     groupId: "$lastMessage.groupId",
+//                     createdAt: "$lastMessage.createdAt",
+//                     unreadCount: 1, // Include unread message count in the result
+//                 },
+//             },
+//         ]);
+
+//         res.json({
+//             success: true,
+//             chatList: chatList,
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
 export const getChatList = asyncHandler(async (req, res, next) => {
     const userId = req.query.connectedWalletId;
-    
+
     try {
         const chatList = await Chat.aggregate([
             {
@@ -56,9 +129,15 @@ export const getChatList = asyncHandler(async (req, res, next) => {
                 $group: {
                     _id: {
                         $cond: {
-                            if: { $eq: ["$sender", userId] }, // If the logged-in user is the sender
-                            then: "$receiver", // Group by receiver (the other person)
-                            else: "$sender", // If the logged-in user is the receiver
+                            if: { $eq: ["$isGroup", true] }, // If it's a group chat, group by groupId
+                            then: "$groupId", // Group by groupId for group chats
+                            else: {
+                                $cond: {
+                                    if: { $eq: ["$sender", userId] }, // If the user is the sender
+                                    then: "$receiver", // Group by receiver (the other person)
+                                    else: "$sender", // If the user is the receiver, group by sender
+                                },
+                            },
                         },
                     },
                     lastMessage: { $last: "$$ROOT" }, // Get the last message in the conversation
@@ -110,6 +189,7 @@ export const getChatList = asyncHandler(async (req, res, next) => {
         next(error);
     }
 });
+
 
 export const getPersonalChatMessages = asyncHandler(async (req, res, next) => {
     try {
