@@ -1,5 +1,7 @@
 import Agreement from "../../models/Agreement.js";
+import Chat from "../../models/Chat.js";
 import Dispute from "../../models/Dispute.js";
+import GroupChat from "../../models/GroupChat.js";
 
 export const getMyTickets = async (validatedData) => {
     const {
@@ -277,3 +279,45 @@ export const splitAmount = async (validatedData, agreement) => {
 
     return updatedAgreement;
 };
+
+export const createGroupChat = async (agreementId) => {
+      try {
+        // Check if group chat already exists for the agreement
+        const existingGroupChat = await GroupChat.findOne({
+            groupId: agreementId,
+        });
+
+        let groupChat;
+        if (!existingGroupChat) {
+            const dispute = await Dispute.findOne({ agreementId });
+            const agreement = await Agreement.findOne({ agreementId });
+            
+            groupChat = await GroupChat.create({
+                groupId: agreementId,
+                groupName: `Dispute Resolve - ${agreement.projectTitle}`,
+                groupMember: [
+                    dispute.payerWalletAddress,
+                    dispute.receiverWalletAddress,
+                    dispute.AssignedAgent.agentId,
+                ],
+            });
+
+             const messagebody = {
+                groupId: groupChat.groupId,
+                sender: "",
+                msg: "Welcome to the chat",
+                image: "",
+                document: "",
+                isGroup: true,
+                groupName: groupChat.groupName,
+                groupMember: groupChat.groupMember,
+            };
+            
+            // Save the group message to the database
+            await Chat.create(messagebody);
+        }
+
+    } catch (error) {
+       throw error;
+    }
+}

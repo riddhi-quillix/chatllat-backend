@@ -1,42 +1,39 @@
 import asyncHandler from "../helper/async.js";
 import give_response from "../helper/help.js";
 import Chat from "../models/Chat.js";
-import Dispute from "../models/Dispute.js";
-import Agreement from "../models/Agreement.js";
-import GroupChat from "../models/GroupChat.js";
 
-export const createGroupChat = asyncHandler(async (req, res, next) => {
-    try {
-        const { agreementId } = req.body;
+// export const createGroupChat = asyncHandler(async (req, res, next) => {
+//     try {
+//         const { agreementId } = req.body;
 
-        // Check if group chat already exists for the agreement
-        const existingGroupChat = await GroupChat.findOne({
-            groupId: agreementId,
-        });
+//         // Check if group chat already exists for the agreement
+//         const existingGroupChat = await GroupChat.findOne({
+//             groupId: agreementId,
+//         });
 
-        let groupChat;
-        if (!existingGroupChat) {
-            const dispute = await Dispute.findOne({ agreementId });
-            const agreement = await Agreement.findOne({ agreementId });
+//         let groupChat;
+//         if (!existingGroupChat) {
+//             const dispute = await Dispute.findOne({ agreementId });
+//             const agreement = await Agreement.findOne({ agreementId });
             
-            groupChat = await GroupChat.create({
-                groupId: agreementId,
-                groupName: `Dispute Resolve - ${agreement.projectTitle}`,
-                groupMember: [
-                    dispute.payerWalletAddress,
-                    dispute.receiverWalletAddress,
-                    dispute.AssignedAgent.agentId,
-                ],
-            });
-        }
+//             groupChat = await GroupChat.create({
+//                 groupId: agreementId,
+//                 groupName: `Dispute Resolve - ${agreement.projectTitle}`,
+//                 groupMember: [
+//                     dispute.payerWalletAddress,
+//                     dispute.receiverWalletAddress,
+//                     dispute.AssignedAgent.agentId,
+//                 ],
+//             });
+//         }
 
-        return give_response(res, 200, true, "Group chat create successfully", {
-            groupChat,
-        });
-    } catch (error) {
-       next(error);
-    }
-});
+//         return give_response(res, 200, true, "Group chat create successfully", {
+//             groupChat,
+//         });
+//     } catch (error) {
+//        next(error);
+//     }
+// });
 
 // export const getChatList = asyncHandler(async (req, res, next) => {
 //     const userId = req.query.connectedWalletId;
@@ -189,7 +186,6 @@ export const getChatList = asyncHandler(async (req, res, next) => {
         next(error);
     }
 });
-
 
 export const getPersonalChatMessages = asyncHandler(async (req, res, next) => {
     try {

@@ -23,6 +23,7 @@ import forgotOtpMail from "../utils/email_template/forgot_otp.js";
 import Agreement from "../models/Agreement.js";
 import {
     allTickets,
+    createGroupChat,
     getMyTicketDetails,
     getMyTickets,
     getTicketDetails,
@@ -448,10 +449,11 @@ export const takeATicket = asyncHandler(async (req, res, next) => {
             lname: agent.lname,
             email: agent.email,
         };
-        await Dispute.updateOne(
+        const dispute = await Dispute.findOneAndUpdate(
             { disputeId },
             { $set: { AssignedAgent, assignStatus: "OnWork" } }
         );
+        await createGroupChat(dispute.agreementId)
 
         return give_response(
             res,
