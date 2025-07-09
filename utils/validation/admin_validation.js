@@ -5,6 +5,11 @@ export const adminLoginSchema = joi.object({
     password: joi.string().required(),
 });
 
+export const changePasswordSchema = joi.object({
+    email: joi.string().email().required(),
+    newPassword: joi.string().required(),
+});
+
 export const reAssignedDisputeSchema = joi.object({
     disputeId: joi.string().required(),
     reAssignedReason: joi.string().required(),
@@ -25,5 +30,5 @@ export const addSupportTeamUserSchema = joi.object({
     password: joi.string().min(6).required(),
     fname: joi.string().required(),
     lname: joi.string().required(),
-    contact: joi.string().required(),
+    type: joi.string().required().valid("Admin", "Member")
 });

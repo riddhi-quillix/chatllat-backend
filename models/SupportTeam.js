@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const supportTeamSchema = new mongoose.Schema(
     {
+        id: {
+            type: String,
+            required: true,
+            unique: true,
+        },
         profileImage: {
             type: String,
             default:
@@ -23,42 +28,18 @@ const supportTeamSchema = new mongoose.Schema(
             type: String,
             select: false
         },
-        contact: {
-            type: String,
-            default: "",
-        },
         isOnline: { 
             type: Boolean, 
             default: 0     // 0 = offline, 1 = online
         },
-        // signupOtp: {
-        //     type: Number,
-        //     trim: true,
-        //     select: false,
-        // },
-        // signupOtp_timestamp: {
-        //     type: Date,
-        // },
-        forgotOtp: {
-            type: Number,
-            trim: true,
-            select: false,
-        },
-        forgotOtp_timestamp: {
-            type: Date,
-            default: null
-        },
-        isVerify: {
-            type: Boolean,
-            default: false
-        },
-        isVerifyForgotOtp: {
-            type: Boolean,
-            default: false
-        },
         assignedDispute: {
             type: [String],
             default: []
+        },
+        type: {
+            type: String,
+            enum: ["Admin", "Member"],
+            required: true,
         }
     },
     { timestamps: true }

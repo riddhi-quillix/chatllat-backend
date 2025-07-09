@@ -188,7 +188,7 @@ export const disputesByWalletId = async (connectedWalletId) => {
 //         );
 
 //         const AssignedAgent = {
-//             agentId: agent._id,
+//             agentId: agent.id,
 //             fname: agent.fname,
 //             lname: agent.lname,
 //             email: agent.email,

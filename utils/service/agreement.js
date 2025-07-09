@@ -35,6 +35,25 @@ export const generateDisputeId = async () => {
     }
 };
 
+// create support team user id
+export const generatesupportId = async () => {
+    try {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        const length = 4; // ID length
+
+        // Generate a random 6-character ID
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            result += characters[randomIndex];
+        }
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const otp_genrator = (min, max) => {
     const otp = Math.floor(Math.random() * (max - min) + min);
     return otp;

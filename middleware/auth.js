@@ -23,7 +23,7 @@ export const supportAuth = asyncHandler(async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRE_IN,
         });
-        const user = await SupportTeam.findOne({ _id: decoded.userId });
+        const user = await SupportTeam.findOne({ id: decoded.userId });
         if (!user)
             return next(
                 new ErrorResponse("Not authorize to access this route", 401)

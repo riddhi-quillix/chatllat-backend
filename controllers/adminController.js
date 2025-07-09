@@ -8,6 +8,7 @@ import {
     addHashSchema,
     addSupportTeamUserSchema,
     adminLoginSchema,
+    changePasswordSchema,
     getPaymentDetailSchema,
     reAssignedDisputeSchema,
 } from "../utils/validation/admin_validation.js";
@@ -18,6 +19,7 @@ import { allTickets } from "../utils/service/support.js";
 import { allTicketSchema } from "../utils/validation/supportTeam_validation.js";
 import supportUserCredentialMail from "../utils/email_template/supportUserCredential.js";
 import { sendEmail } from "../utils/service/sendEmail.js";
+import { generatesupportId } from "../utils/service/agreement.js";
 
 export const createAdmin = asyncHandler(async (req, res, next) => {
     try {
@@ -166,22 +168,32 @@ export const addSupportTeamUser = asyncHandler(async (req, res, next) => {
         const validatedData = await addSupportTeamUserSchema.validateAsync(
             reqData
         );
-        const { email, password, fname, lname, contact } = validatedData;
+        const { email, password, fname, lname, type } = validatedData;
 
         const isExist = await SupportTeam.findOne({ email });
         if (isExist)
             return give_response(res, 400, false, "User already exist");
 
         const hashPass = await bcryptjs.hash(password, 8);
+
+        const randomId = await generatesupportId()
+        let id;
+        if (type === "Admin") {
+            id = `adm${randomId}`;
+        } else if (type === "Member") {
+            id = `stm${randomId}`;
+        }
+
         const user = await SupportTeam.create({
             email,
             password: hashPass,
             fname,
             lname,
-            contact,
+            type,
+            id
         });
-        
-        const username = fname + " " + lname
+
+        const username = fname + " " + lname;
         const { html } = supportUserCredentialMail(username, email, password);
         await sendEmail(html, email, "Login Credential");
 
@@ -189,6 +201,31 @@ export const addSupportTeamUser = asyncHandler(async (req, res, next) => {
         give_response(res, 200, true, "Support user add successfully", {
             user,
         });
+    } catch (error) {
+        next(error);
+    }
+});
+
+export const changeSupportUserPassword = asyncHandler(async (req, res, next) => {
+    try {
+        const reqData = req.body;
+        const validatedData = await changePasswordSchema.validateAsync(reqData);
+        const { email, newPassword } = validatedData;
+
+        const user = await SupportTeam.findOne({ email }).select("+password");
+        if (!user)
+            return give_response(
+                res,
+                404,
+                false,
+                "User not found with this email"
+            );
+            
+        const hashPass = await bcryptjs.hash(newPassword, 8);
+        user.password = hashPass;
+        user.save();
+
+        give_response(res, 200, true, "Password changed successfully!");
     } catch (error) {
         next(error);
     }

@@ -33,6 +33,7 @@ export const fetchPaymentDetails = async (disputeId) => {
                         {
                             $project: {
                                 split: 1,
+                                createdAt: 1,
                                 _id: 0,
                             },
                         },
@@ -62,6 +63,7 @@ export const fetchPaymentDetails = async (disputeId) => {
                     AssignedAgent: 1,
                     supportDecision: 1,
                     agreement: 1,
+                    disputeCreatedAt: "$createdAt"
                 },
             },
         ]);
