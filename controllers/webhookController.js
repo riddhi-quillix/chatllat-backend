@@ -92,6 +92,7 @@ async function updateDataWhenFundsIsDeposit(
             );
 
             obj.type = "Deposit";
+            obj.agreementId = agreementId;
             await TransectionHistory.create(obj);
 
             await Notification.updateMany(
@@ -131,6 +132,7 @@ async function updateDataWhenFundsIsWithdraw(
             );
 
             obj.type = "Withdrawal";
+            obj.agreementId = agreementId;
             await TransectionHistory.create(obj);
         } else {
             console.log("amount mismatch");

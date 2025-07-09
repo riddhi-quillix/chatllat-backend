@@ -45,7 +45,10 @@ const transection_historySchema = new mongoose.Schema(
             type: String,
             enum: ["Deposit", "Withdrawal"],
             required: true 
-        }
+        },
+        agreementId: {
+            type: String
+        },
     },
     { timestamps: true, versionKey: false }
 );

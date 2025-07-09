@@ -15,6 +15,7 @@ import recordWithdrawalRouter from "./routes/withdrawalRoutes.js";
 import swapRouter from "./routes/swapRoutes.js";
 import adminRouter from "./routes/AdminRoutes.js";
 import postRouter from "./routes/postRoutes.js";
+import transectionRouter from "./routes/transectionRoutes.js";
 
 import { Server } from "socket.io";
 import Agreement from "./models/Agreement.js";
@@ -53,6 +54,7 @@ app.use("/api/withdraw", recordWithdrawalRouter);
 app.use("/api/swap", swapRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/post", postRouter);
+app.use("/api/transection", transectionRouter);
 app.use(
     "/api/webhook",
     express.raw({ type: "application/json" }),
