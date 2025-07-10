@@ -1,5 +1,11 @@
 import Agreement from "../../models/Agreement.js";
 import Dispute from "../../models/Dispute.js";
+import bcryptjs from "bcryptjs";
+import { generatesupportId } from "./agreement.js";
+import Admin from "../../models/Admin.js";
+import SupportTeam from "../../models/SupportTeam.js";
+import supportUserCredentialMail from "../email_template/supportUserCredential.js";
+import { sendEmail } from "./sendEmail.js";
 
 export const addHashLink = async (hash, hashField, agreement) => {
     try {
@@ -63,12 +69,43 @@ export const fetchPaymentDetails = async (disputeId) => {
                     AssignedAgent: 1,
                     supportDecision: 1,
                     agreement: 1,
-                    disputeCreatedAt: "$createdAt"
+                    disputeCreatedAt: "$createdAt",
                 },
             },
         ]);
 
-        return dispute[0]
+        return dispute[0];
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const createMember = async (validatedData) => {
+    try {
+        const { email, password, fname, lname, role, type } = validatedData;
+
+        const hashPass = await bcryptjs.hash(password, 8);
+        const prefix = role === "Member" ? "stm" : "adm";
+        const id = `${prefix}${await generatesupportId()}`;
+        const model = role === "Member" ? SupportTeam : Admin;
+
+        const newUserData = {
+            email,
+            password: hashPass,
+            fname,
+            lname,
+            id,
+            ...(role === "SubAdmin" && { type, role }),
+        };
+
+        const user = await model.create(newUserData);
+        const username = `${fname} ${lname}`;
+
+        const { html } = supportUserCredentialMail(username, email, password);
+        await sendEmail(html, email, "Login Credential");
+
+        delete user._doc.password;
+        return user;
     } catch (error) {
         throw error;
     }

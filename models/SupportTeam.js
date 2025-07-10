@@ -36,11 +36,6 @@ const supportTeamSchema = new mongoose.Schema(
             type: [String],
             default: []
         },
-        type: {
-            type: String,
-            enum: ["Admin", "Member"],
-            required: true,
-        }
     },
     { timestamps: true }
 );

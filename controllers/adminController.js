@@ -6,7 +6,7 @@ import Admin from "../models/Admin.js";
 import SupportTeam from "../models/SupportTeam.js";
 import {
     addHashSchema,
-    addSupportTeamUserSchema,
+    addMemberSchema,
     adminLoginSchema,
     changePasswordSchema,
     getPaymentDetailSchema,
@@ -14,12 +14,17 @@ import {
 } from "../utils/validation/admin_validation.js";
 import Dispute from "../models/Dispute.js";
 import Agreement from "../models/Agreement.js";
-import { addHashLink, fetchPaymentDetails } from "../utils/service/admin.js";
+import {
+    addHashLink,
+    createMember,
+    fetchPaymentDetails,
+} from "../utils/service/admin.js";
 import { allTickets } from "../utils/service/support.js";
 import { allTicketSchema } from "../utils/validation/supportTeam_validation.js";
 import supportUserCredentialMail from "../utils/email_template/supportUserCredential.js";
 import { sendEmail } from "../utils/service/sendEmail.js";
 import { generatesupportId } from "../utils/service/agreement.js";
+import changePasswordMail from "../utils/email_template/change_password.js";
 
 export const createAdmin = asyncHandler(async (req, res, next) => {
     try {
@@ -30,9 +35,14 @@ export const createAdmin = asyncHandler(async (req, res, next) => {
             return give_response(res, 400, false, "Admin already exist");
 
         const hashPass = await bcryptjs.hash(password, 8);
+        const randomId = await generatesupportId();
+        const id = `adm${randomId}`;
+
         const admin = await Admin.create({
             email,
             password: hashPass,
+            role: "SuperAdmin",
+            id,
         });
 
         delete admin._doc.password;
@@ -162,57 +172,167 @@ export const getPaymentDetails = asyncHandler(async (req, res, next) => {
     }
 });
 
-export const addSupportTeamUser = asyncHandler(async (req, res, next) => {
-    try {
-        const reqData = req.body;
-        const validatedData = await addSupportTeamUserSchema.validateAsync(
-            reqData
-        );
-        const { email, password, fname, lname, type } = validatedData;
+// export const addMember = asyncHandler(async (req, res, next) => {
+//     try {
+//         const reqData = req.body;
+//         const userId = req.userId
+//         const validatedData = await addMemberSchema.validateAsync(reqData);
+//         const { email, password, fname, lname, role, type } = validatedData;
 
-        const isExist = await SupportTeam.findOne({ email });
+//         const admin = await Admin.findOne({userId})
+//         if(admin.role === "SubAdmin" && type === 'ManageMember' )
+//             return give_response(res, 400, false, "You are not able to add data")
+
+//         if (role === "Member") {
+//             const isExist = await SupportTeam.findOne({ email });
+//             if (isExist)
+//                 return give_response(res, 400, false, "User already exist");
+//             const hashPass = await bcryptjs.hash(password, 8);
+//             const randomId = await generatesupportId();
+//             const id = `stm${randomId}`;
+//             const user = await SupportTeam.create({
+//                 email,
+//                 password: hashPass,
+//                 fname,
+//                 lname,
+//                 id,
+//             });
+//             const username = fname + " " + lname;
+//             const { html } = supportUserCredentialMail(
+//                 username,
+//                 email,
+//                 password
+//             );
+//             await sendEmail(html, email, "Login Credential");
+//             delete user._doc.password;
+//         } else {
+//             const isExist = await Admin.findOne({ email });
+//             if (isExist)
+//                 return give_response(res, 400, false, "User already exist");
+//             const hashPass = await bcryptjs.hash(password, 8);
+//             const randomId = await generatesupportId();
+//             const id = `adm${randomId}`;
+//             const user = await Admin.create({
+//                 email,
+//                 password: hashPass,
+//                 fname,
+//                 lname,
+//                 type,
+//                 role,
+//                 id,
+//             });
+//             const username = fname + " " + lname;
+//             const { html } = supportUserCredentialMail(
+//                 username,
+//                 email,
+//                 password
+//             );
+//             await sendEmail(html, email, "Login Credential");
+//             delete user._doc.password;
+//         }
+
+//         give_response(res, 200, true, "Member add successfully", {
+//             user,
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
+export const addMember = asyncHandler(async (req, res, next) => {
+    try {
+        const userId = req.userId;
+        const validatedData = await addMemberSchema.validateAsync(req.body);
+        const { email, password, fname, lname, role, type } = validatedData;
+
+        const admin = await Admin.findOne({ _id: userId });
+        if (admin.role === "SubAdmin" && admin.type === "ManageMember")
+            return give_response(
+                res,
+                400,
+                false,
+                "You are not able to add data"
+            );
+
+        const isExist = await (role === "Member" ? SupportTeam : Admin).findOne(
+            { email }
+        );
         if (isExist)
             return give_response(res, 400, false, "User already exist");
 
-        const hashPass = await bcryptjs.hash(password, 8);
-
-        const randomId = await generatesupportId()
-        let id;
-        if (type === "Admin") {
-            id = `adm${randomId}`;
-        } else if (type === "Member") {
-            id = `stm${randomId}`;
-        }
-
-        const user = await SupportTeam.create({
-            email,
-            password: hashPass,
-            fname,
-            lname,
-            type,
-            id
-        });
-
-        const username = fname + " " + lname;
-        const { html } = supportUserCredentialMail(username, email, password);
-        await sendEmail(html, email, "Login Credential");
-
-        delete user._doc.password;
-        give_response(res, 200, true, "Support user add successfully", {
-            user,
-        });
+        const user = await createMember(validatedData);
+        give_response(res, 200, true, "Member added successfully", { user });
     } catch (error) {
         next(error);
     }
 });
 
-export const changeSupportUserPassword = asyncHandler(async (req, res, next) => {
-    try {
-        const reqData = req.body;
-        const validatedData = await changePasswordSchema.validateAsync(reqData);
-        const { email, newPassword } = validatedData;
+// export const changeMemberPassword = asyncHandler(async (req, res, next) => {
+//     try {
+//         const userId = req.userId;
+//         const reqData = req.body;
+//         const validatedData = await changePasswordSchema.validateAsync(reqData);
+//         const { email, newPassword } = validatedData;
 
-        const user = await SupportTeam.findOne({ email }).select("+password");
+//         const admin = await Admin.findOne({ _id: userId });
+//         if (admin.role !== "SuperAdmin")
+//             return give_response(
+//                 res,
+//                 400,
+//                 false,
+//                 "You are not able to change password"
+//             );
+
+//         let user;
+//         user = await Admin.findOne({ email }).select("+password");
+//         if (!user) {
+//             user = await SupportTeam.findOne({ email }).select("+password");
+//         }
+
+//         if (!user)
+//             return give_response(
+//                 res,
+//                 404,
+//                 false,
+//                 "User not found with this email"
+//             );
+
+//         const hashPass = await bcryptjs.hash(newPassword, 8);
+//         user.password = hashPass;
+//         user.save();
+
+//         const username = user.fname + " " + user.lname;
+//         const { html } = changePasswordMail(username, email, newPassword);
+//         await sendEmail(html, email, "New Password");
+
+//         give_response(res, 200, true, "Password changed successfully!");
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
+export const removeMember = asyncHandler(async (req, res, next) => {
+    try {
+        const userId = req.userId;
+        const { memberId } = req.query;
+
+        const admin = await Admin.findOne({ _id: userId });
+        if (admin.role === "SubAdmin" && admin.type === "AddMember")
+            return give_response(
+                res,
+                400,
+                false,
+                "You are not able to remove member"
+            );
+
+        let user;
+        let type = "admin";
+        user = await Admin.findOne({ id: memberId, role: "SubAdmin" });
+        if (!user) {
+            type = "support";
+            user = await SupportTeam.findOne({ id: memberId });
+        }
+
         if (!user)
             return give_response(
                 res,
@@ -220,12 +340,87 @@ export const changeSupportUserPassword = asyncHandler(async (req, res, next) => 
                 false,
                 "User not found with this email"
             );
-            
-        const hashPass = await bcryptjs.hash(newPassword, 8);
-        user.password = hashPass;
-        user.save();
 
-        give_response(res, 200, true, "Password changed successfully!");
+        await (type === "support" ? SupportTeam : Admin).deleteOne({
+            id: memberId,
+        });
+
+        give_response(res, 200, true, "Member deleted successfully!");
+    } catch (error) {
+        next(error);
+    }
+});
+
+export const getAllMember = asyncHandler(async (req, res, next) => {
+    try {
+        const subAdmin = await Admin.find({ role: "SubAdmin" });
+        // const support = await SupportTeam.find({});
+        const support = await SupportTeam.aggregate([
+            {
+                $addFields: {
+                    role: "Member",
+                },
+            },
+        ]);
+
+        const allUsers = [...subAdmin, ...support];
+        const users = allUsers.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        give_response(res, 200, true, "All member get successfully!", {
+            users,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+export const updateMember = asyncHandler(async (req, res, next) => {
+    try {
+        const userId = req.userId;
+        const reqData = req.body;
+        const { fname, lname, email, password, memberId } = reqData;
+
+        const admin = await Admin.findOne({ _id: userId });
+        if (admin.role === "SubAdmin" && admin.type === "AddMember")
+            return give_response(
+                res,
+                400,
+                false,
+                "You are not able to remove member"
+            );
+
+        let user;
+        let type = "admin";
+        user = await Admin.findOne({ id: memberId, role: "SubAdmin" });
+        if (!user) {
+            type = "support";
+            user = await SupportTeam.findOne({ id: memberId });
+            if (!user)
+                return give_response(
+                    res,
+                    404,
+                    false,
+                    "User not found with this email"
+                );
+        }
+
+        const hashPass = await bcryptjs.hash(password, 8);
+
+        const updatedUser = await (type === "support"
+            ? SupportTeam
+            : Admin
+        ).findOneAndUpdate(
+            {
+                id: memberId,
+            },
+            { fname, lname, email, password: hashPass },
+            { new: true }
+        );
+
+        give_response(res, 200, true, "Member update successfully!", {
+            updatedUser,
+        });
     } catch (error) {
         next(error);
     }

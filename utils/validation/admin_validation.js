@@ -25,10 +25,17 @@ export const getPaymentDetailSchema = joi.object({
     disputeId: joi.string().required(),
 });
 
-export const addSupportTeamUserSchema = joi.object({
+export const addMemberSchema = joi.object({
     email: joi.string().email().required(),
     password: joi.string().min(6).required(),
     fname: joi.string().required(),
     lname: joi.string().required(),
-    type: joi.string().required().valid("Admin", "Member")
+    role: joi.string().required().valid("SubAdmin", "Member"),
+    type: joi.string()
+    .valid("ManageMember", "AddMember", "All")
+    .when("role", {
+      is: "SubAdmin",
+      then: joi.required(),
+      otherwise: joi.forbidden(),
+    }),
 });
