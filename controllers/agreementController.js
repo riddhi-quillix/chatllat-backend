@@ -367,18 +367,18 @@ export const getDisputedStatusAgreement = asyncHandler(async (req, res, next) =>
     }
 });
 
-// Get Withdrawal Agreement Data
 export const getWithdrawalAgreement = asyncHandler(async (req, res, next) => {
     try {
         const { connectedWalletId } = req.query;
         const agreements = await Agreement.aggregate([
             {
                 $match: {
-                    $or: [
-                        {status: "FundsReleased", receiverWallet: connectedWalletId},
-                        {status: "ReturnFunds", payerWallet: connectedWalletId},
-                    ],
-                },
+                        $or: [
+                            {status: "FundsReleased", receiverWallet: connectedWalletId},
+                            {status: "ReturnFunds", payerWallet: connectedWalletId},
+                            {status: "Completed", withdrawalUser: connectedWalletId},
+                        ],
+                    },
             },
             {
                 $project: {
@@ -403,6 +403,43 @@ export const getWithdrawalAgreement = asyncHandler(async (req, res, next) => {
         next(error);
     }
 });
+
+// Get Withdrawal Agreement Data
+// export const getWithdrawalAgreement = asyncHandler(async (req, res, next) => {
+//     try {
+//         const { connectedWalletId } = req.query;
+//         const agreements = await Agreement.aggregate([
+//             {
+//                 $match: {
+//                     $or: [
+//                         {status: "FundsReleased", receiverWallet: connectedWalletId},
+//                         {status: "ReturnFunds", payerWallet: connectedWalletId},
+//                     ],
+//                 },
+//             },
+//             {
+//                 $project: {
+//                     payerWallet: 1,
+//                     receiverWallet: 1,
+//                     projectTitle: 1,
+//                     agreementId: 1,
+//                     status: 1,
+//                     amountDetails: 1,
+//                 },
+//             },
+//         ]);
+
+//         return give_response(
+//             res,
+//             200,
+//             true,
+//             "Withdrawal agreements retrieved successfully",
+//             { agreements }
+//         );
+//     } catch (error) {
+//         next(error);
+//     }
+// });
 
 // export const getWithdrawalAgreement = asyncHandler(async (req, res, next) => {
 //     try {

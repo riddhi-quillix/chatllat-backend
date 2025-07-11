@@ -181,8 +181,12 @@ export const transectionConfirmation = asyncHandler(async (req, res, next) => {
 
                 const withdrawalAgreement = await Agreement.findOne({
                     status: "RequestedWithdrawal",
-                    receiverWallet: obj.fromAddress,
-                    // receiverWallet: obj.toAddress,
+                    $or: [
+                        { receiverWallet: obj.fromAddress },
+                        { payerWallet: obj.fromAddress },
+                    ],
+                    // receiverWallet: obj.fromAddress,
+                    // payerWallet: obj.fromAddress,
                 });
 
                 if (withdrawalAgreement) {

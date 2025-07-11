@@ -11,7 +11,7 @@ export const getSignature = asyncHandler(async (req, res, next) => {
         const validatedData = await getSignatureSchema.validateAsync(reqData)
         const { address, agreementId } = validatedData;
 
-        const agreement = await Agreement.findOne({ agreementId });
+        const agreement = await Agreement.findOne({ agreementId, status: { $in: ["FundsReleased", "ReturnFunds"] } });
         if (!agreement)
             return give_response(res, 404, false, "Agreement not found");
 
@@ -32,7 +32,7 @@ export const getSignature = asyncHandler(async (req, res, next) => {
             adminPrivateKey
         );
 
-        await Agreement.updateOne({ agreementId }, {$set: {status: "RequestedWithdrawal"}})
+        await Agreement.updateOne({ agreementId }, {$set: {status: "RequestedWithdrawal", withdrawalUser: address}})
 
         const { signature, messageHash, signer } = signatureData;
         return give_response(res, 200, true, "", {

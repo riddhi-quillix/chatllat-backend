@@ -117,6 +117,10 @@ const agreementSchema = new mongoose.Schema(
                 type: String,
                 default: null
             }
+        },
+        withdrawalUser: {
+            type: String,
+            default: null
         }
     },
     {
