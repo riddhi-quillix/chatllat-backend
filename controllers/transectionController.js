@@ -34,6 +34,7 @@ export const getEscrowTransection = asyncHandler(async (req, res, next) => {
                     agreementId: 1,
                     projectTitle: "$agreement.projectTitle",
                     amountDetails: "$agreement.amountDetails",
+                    category: "$agreement.category",
                     hashLink: {
                         $concat: [
                             {

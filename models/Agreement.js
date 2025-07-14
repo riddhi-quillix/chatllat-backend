@@ -8,6 +8,11 @@ const agreementSchema = new mongoose.Schema(
             unique: true,
             required: true,
         },
+        category: {
+            type: String,
+            default: "Agreement",
+            enum: ["Agreement", "Freelancer"]
+        },
         role: {
             type: String,
             enum: ["Payer", "Receiver"],

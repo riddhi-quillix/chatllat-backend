@@ -351,25 +351,88 @@ export const removeMember = asyncHandler(async (req, res, next) => {
     }
 });
 
+// export const getAllMember = asyncHandler(async (req, res, next) => {
+//     try {
+//         // const {search} = req.query
+//         const subAdmin = await Admin.find({ role: "SubAdmin" });
+//         // const support = await SupportTeam.find({});
+//         const support = await SupportTeam.aggregate([
+//             {
+//                 $addFields: {
+//                     role: "Member",
+//                 },
+//             },
+//         ]);
+
+//         const allUsers = [...subAdmin, ...support];
+//         const users = allUsers.sort(
+//             (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+//         );
+//         give_response(res, 200, true, "All member get successfully!", {
+//             users,
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
 export const getAllMember = asyncHandler(async (req, res, next) => {
     try {
-        const subAdmin = await Admin.find({ role: "SubAdmin" });
-        // const support = await SupportTeam.find({});
-        const support = await SupportTeam.aggregate([
-            {
-                $addFields: {
-                    role: "Member",
+        const { search, sort } = req.query;
+        const subAdminQuery = search
+            ? [
+                {
+                    $match: {
+                        role: "SubAdmin",
+                    }
                 },
-            },
+                {
+                    $addFields: {
+                        fullName: { $concat: ["$fname", " ", "$lname"] }
+                    }
+                },
+                {
+                    $match: {
+                        fullName: { $regex: search, $options: "i" }
+                    }
+                }
+            ]
+            : [
+                { $match: { role: "SubAdmin" } }
+            ];
+
+        const subAdmin = await Admin.aggregate(subAdminQuery);
+
+        const supportQuery = search
+            ? [
+                {
+                    $addFields: {
+                        fullName: { $concat: ["$fname", " ", "$lname"] }
+                    }
+                },
+                {
+                    $match: {
+                        fullName: { $regex: search, $options: "i" }
+                    }
+                }
+            ]
+            : [];
+
+        const support = await SupportTeam.aggregate([
+            ...supportQuery,
+            { $addFields: { role: "Member" } }
         ]);
 
         const allUsers = [...subAdmin, ...support];
-        const users = allUsers.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        give_response(res, 200, true, "All member get successfully!", {
-            users,
-        });
+
+        let sortedUsers;
+        if (sort === "ascending") {
+            sortedUsers = allUsers.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        } else {
+            sortedUsers = allUsers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+
+        give_response(res, 200, true, "All members retrieved successfully!", { users: sortedUsers });
     } catch (error) {
         next(error);
     }
@@ -425,3 +488,12 @@ export const updateMember = asyncHandler(async (req, res, next) => {
         next(error);
     }
 });
+
+export const getAllAgentName = asyncHandler(async(req, res, next) => {
+    try {
+        const agent = await SupportTeam.find({}).select("fname lname -_id")
+        give_response(res, 200, true, "Agent name get successfully", agent)
+    } catch (error) {
+        next(error);
+    }
+})

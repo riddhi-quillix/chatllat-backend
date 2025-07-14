@@ -4,6 +4,7 @@ import {
     addMember,
     // changeMemberPassword,
     createAdmin,
+    getAllAgentName,
     getAllMember,
     getAllTickets,
     getPaymentDetails,
@@ -26,5 +27,6 @@ router.post("/add/support/user", adminAuth, addMember);
 router.delete("/delete/member", adminAuth, removeMember); 
 router.get("/all/member", adminAuth, getAllMember); 
 router.patch("/update/member", adminAuth, updateMember); 
+router.get("/all/agent/name", adminAuth, getAllAgentName); 
 
 export default router;

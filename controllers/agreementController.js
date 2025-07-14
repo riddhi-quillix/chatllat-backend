@@ -388,6 +388,7 @@ export const getWithdrawalAgreement = asyncHandler(async (req, res, next) => {
                     agreementId: 1,
                     status: 1,
                     amountDetails: 1,
+                    createdAt: 1
                 },
             },
         ]);
