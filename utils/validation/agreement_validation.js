@@ -9,10 +9,10 @@ export const createAgreementSchema = joi.object({
         'any.required': 'creatorWallet is required',
         'string.base': 'creatorWallet must be a string',
     }),
-    name: joi.string(),
+    name: joi.string().allow(null, ''),
     chain: joi.string(),
-    email: joi.string().email(),
-    contact: joi.string(),
+    email: joi.string().email().allow(null, ''),
+    contact: joi.string().allow(null, ''),
     projectTitle: joi.string().min(2),
     projectDescription: joi.string().min(10),
     amountDetails: joi.object().required().keys({
@@ -45,15 +45,15 @@ export const updateAgreementSchema = joi.object({
     }),
 
     payerDetails: joi.object().optional().keys({
-        name: joi.string().optional(),
-        email: joi.string().email().optional(),
-        contact: joi.string().optional(),
+        name: joi.string().optional().allow(null, ''),
+        email: joi.string().email().optional().allow(null, ''),
+        contact: joi.string().optional().allow(null, ''),
     }),
 
     receiverDetails: joi.object().optional().keys({
-        name: joi.string().optional(),
-        email: joi.string().email().optional(),
-        contact: joi.string().optional(),
+        name: joi.string().optional().allow(null, ''),
+        email: joi.string().email().optional().allow(null, ''),
+        contact: joi.string().optional().allow(null, ''),
     }),
     amountDetails: joi.object().optional().keys({
         amount: joi.string().optional(),
@@ -79,9 +79,9 @@ export const addPersonalDetailsSchema = joi.object({
         'object.base': 'details must be an object',
         'any.required': 'details is required',
     }).keys({
-        name: joi.string().optional(),
-        email: joi.string().email().optional(),
-        contact: joi.string().optional(),
+        name: joi.string().optional().allow(null, ''),
+        email: joi.string().email().optional().allow(null, ''),
+        contact: joi.string().optional().allow(null, ''),
     }),
 });
 
