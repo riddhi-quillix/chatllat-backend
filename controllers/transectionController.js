@@ -4,13 +4,13 @@ import TransectionHistory from "../models/TransectionHistory.js";
 
 export const getEscrowTransection = asyncHandler(async (req, res, next) => {
     try {
-        const { walletId } = req.query;
+        // const { walletId } = req.query;
 
         const transection = await TransectionHistory.aggregate([
             {
                 $match: {
                     type: "Deposit",
-                    fromAddress: walletId,
+                    // fromAddress: walletId,
                 },
             },
             {
