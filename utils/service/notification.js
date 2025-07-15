@@ -43,15 +43,15 @@ export const notificationWhenStatusChange = async (status, agreement, connectedW
         case "Disputed":
             let formUrl = `https://yourdomain.com/evidence-form?agreementId=${agreementId}`
 
-            await createNotification(counterpartyWallet, agreementId, "Dispute Raised", `The other party has raised a dispute. Please upload relevant evidence or documentation to support your side using the link ${formUrl}.`);
+            await createNotification(counterpartyWallet, agreementId, "Dispute Raised", `The other party has raised a dispute. Please upload relevant evidence or documentation to support your side.`);
             break;
         
         case "AutoDisputed":
             let url = `https://yourdomain.com/evidence-form?agreementId=${agreementId}`
             
-            await createNotification(agreement.payerWallet, agreementId, "Dispute Auto Raised", `A dispute has been automatically raised for ${agreement.projectTitle} project. You’re requested to submit your supporting evidence or documentation using the link. ${url}`);
+            await createNotification(agreement.payerWallet, agreementId, "Dispute Auto Raised", `A dispute has been automatically raised for ${agreement.projectTitle} project. You’re requested to submit your supporting evidence or documentation.`);
 
-            await createNotification(agreement.receiverWallet, agreementId, "Dispute Auto Raised", `A dispute has been automatically raised for ${agreement.projectTitle} project. You’re requested to submit your supporting evidence or documentation using the link. ${url}`);
+            await createNotification(agreement.receiverWallet, agreementId, "Dispute Auto Raised", `A dispute has been automatically raised for ${agreement.projectTitle} project. You’re requested to submit your supporting evidence or documentation.`);
             break;
     }
 };
