@@ -6,6 +6,7 @@ import {
     createProfileSchema,
     updateUserSchema,
 } from "../utils/validation/user_validation.js";
+import Notification from "../models/Notification.js";
 
 export const createProfile = asyncHandler(async (req, res, next) => {
     try {
@@ -77,7 +78,6 @@ export const addRating = asyncHandler(async (req, res, next) => {
 export const getProfile = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
-
         const result = await User.aggregate([
             { $match: { walletId: id } },
             {
@@ -94,7 +94,9 @@ export const getProfile = asyncHandler(async (req, res, next) => {
             },
         ]);
 
+        const unseenNotification = await Notification.countDocuments({walletId: id, read: false})
         return give_response(res, 200, true, "Profile get successfully", {
+            unseenNotification,
             user: result[0],
         });
     } catch (error) {
