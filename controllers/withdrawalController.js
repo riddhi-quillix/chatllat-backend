@@ -15,7 +15,8 @@ export const getSignature = asyncHandler(async (req, res, next) => {
         if (!agreement)
             return give_response(res, 404, false, "Agreement not found");
 
-        const decimal = agreement.amountDetails.chain == 'polygon' ? 6 : 18
+        // const decimal = agreement.amountDetails.chain == 'polygon' ? 6 : 18
+        const decimal = (agreement.amountDetails.chain == 'polygon' || agreement.amountDetails.chain == 'avalanche') ? 6 : 18;
         const amount = agreement.amountDetails.amount;
         const WithdrawalAmount = ethers.parseUnits(amount, decimal);
 

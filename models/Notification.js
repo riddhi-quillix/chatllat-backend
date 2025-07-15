@@ -18,6 +18,9 @@ const notificationSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
+        amount: {
+            type: String
+        },
         // isImportant: {
         //     type: Boolean,
         //     default: false

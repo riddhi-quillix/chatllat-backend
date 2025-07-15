@@ -61,5 +61,3 @@ export const cronNotification = async (agreement) => {
     const msg = "Please deposit the agreed funds to proceed with the project. Kindly note that the deposit must be made within 72 hours from now to avoid any delays or potential cancellation of the project.";
     await createNotification(agreement.payerWallet, agreement.agreementId, "Deposit Funds", msg)
 };
-
-// ``
