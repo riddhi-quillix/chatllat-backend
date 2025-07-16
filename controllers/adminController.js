@@ -111,22 +111,46 @@ export const reAssignedDispute = asyncHandler(async (req, res, next) => {
     }
 });
 
+// export const addHash = asyncHandler(async (req, res, next) => {
+//     try {
+//         const reqData = req.body;
+//         const validatedData = await addHashSchema.validateAsync(reqData);
+//         const { hash, type, agreementId } = validatedData;
+
+//         const agreement = await Agreement.findOne({ agreementId });
+//         if (!agreement)
+//             return give_response(res, 404, false, "Agreement not found");
+
+//         const hashField = type === "Payer" ? "payerHash" : "receiverHash";
+//         if (agreement.hashLink[hashField]) {
+//             return give_response(res, 409, false, `${type}Hash already added`);
+//         }
+
+//         const updatedAgreement = await addHashLink(hash, hashField, agreement);
+
+//         return give_response(
+//             res,
+//             200,
+//             true,
+//             "Hash added successfully",
+//             updatedAgreement
+//         );
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
 export const addHash = asyncHandler(async (req, res, next) => {
     try {
         const reqData = req.body;
         const validatedData = await addHashSchema.validateAsync(reqData);
-        const { hash, type, agreementId } = validatedData;
+        const { agreementId } = validatedData;
 
         const agreement = await Agreement.findOne({ agreementId });
         if (!agreement)
             return give_response(res, 404, false, "Agreement not found");
 
-        const hashField = type === "Payer" ? "payerHash" : "receiverHash";
-        if (agreement.hashLink[hashField]) {
-            return give_response(res, 409, false, `${type}Hash already added`);
-        }
-
-        const updatedAgreement = await addHashLink(hash, hashField, agreement);
+        const updatedAgreement = await addHashLink(validatedData);
 
         return give_response(
             res,

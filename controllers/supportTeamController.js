@@ -451,7 +451,7 @@ export const takeATicket = asyncHandler(async (req, res, next) => {
         };
         const dispute = await Dispute.findOneAndUpdate(
             { disputeId },
-            { $set: { AssignedAgent, assignStatus: "OnWork" } }
+            { $set: { AssignedAgent, assignStatus: "OnWork", status: "InProcess" } }
         );
         await createGroupChat(dispute.agreementId)
 

@@ -16,8 +16,10 @@ export const reAssignedDisputeSchema = joi.object({
 });
 
 export const addHashSchema = joi.object({
-    hash: joi.string().required(),
-    type: joi.string().valid("Payer", "Receiver"),
+    payerHash: joi.string().required(),
+    receiverHash: joi.string().required(),
+    payerEvidence: joi.string().required(),
+    receiverEvidence: joi.string().required(),
     agreementId: joi.string().required(),
 });
 

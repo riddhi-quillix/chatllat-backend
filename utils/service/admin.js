@@ -7,14 +7,27 @@ import SupportTeam from "../../models/SupportTeam.js";
 import supportUserCredentialMail from "../email_template/supportUserCredential.js";
 import { sendEmail } from "./sendEmail.js";
 
-export const addHashLink = async (hash, hashField, agreement) => {
+export const addHashLink = async (validatedData) => {
     try {
-        const updatedHashLink = {
-            hashLink: { ...agreement.hashLink, [hashField]: hash },
-        };
+        const {
+            payerHash,
+            receiverHash,
+            payerEvidence,
+            receiverEvidence,
+            agreementId,
+        } = validatedData;
+
         const updatedAgreement = await Agreement.findOneAndUpdate(
-            { agreementId: agreement.agreementId },
-            updatedHashLink,
+            { agreementId },
+            {
+                $set: {
+                    "hashLink.payer.hash": payerHash,
+                    "hashLink.receiver.hash": receiverHash,
+                    "hashLink.receiver.image": receiverEvidence,
+                    "hashLink.payer.image": payerEvidence,
+                    "timeline.disputeResolved": new Date()
+                },
+            },
             { new: true }
         ).select("agreementId hashLink");
 

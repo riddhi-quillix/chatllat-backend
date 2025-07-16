@@ -261,7 +261,6 @@ export const splitAmount = async (validatedData, agreement) => {
             $set: {
                 split,
                 status: "DisputeResolved",
-                "timeline.disputeResolved": new Date()
             },
         },
         { new: true }

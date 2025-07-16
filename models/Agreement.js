@@ -115,13 +115,13 @@ const agreementSchema = new mongoose.Schema(
             payerWithdrawn: { type: Boolean, default: false },
         },
         hashLink: {
-            payerHash: {
-                type: String,
-                default: null
+            payer: {
+                hash: { type: String, default: null },
+                image: { type: String, default: null },
             },
-            receiverHash: {
-                type: String,
-                default: null
+            receiver: {
+                hash: { type: String, default: null },
+                image: { type: String, default: null },
             }
         },
         withdrawalUser: {
