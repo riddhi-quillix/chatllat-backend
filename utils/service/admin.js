@@ -7,7 +7,7 @@ import SupportTeam from "../../models/SupportTeam.js";
 import supportUserCredentialMail from "../email_template/supportUserCredential.js";
 import { sendEmail } from "./sendEmail.js";
 
-export const addHashLink = async (validatedData) => {
+export const addHashLink = async (validatedData, chain) => {
     try {
         const {
             payerHash,
@@ -17,12 +17,38 @@ export const addHashLink = async (validatedData) => {
             agreementId,
         } = validatedData;
 
+        let payerhash
+        let receiverhash
+
+        switch (chain) {
+            case 'bsc':
+                payerhash = `https://bscscan.com/tx/${payerHash}`
+                receiverhash = `https://bscscan.com/tx/${receiverHash}`
+            break;
+            case 'polygon':
+                payerhash = `https://polygonscan.com/tx/${payerHash}`
+                receiverhash = `https://polygonscan.com/tx/${receiverHash}`
+            break;
+            case 'avalanche':
+                payerhash = `https://snowtrace.io/tx/${payerHash}`
+                receiverhash = `https://snowtrace.io/tx/${receiverHash}`
+            break;
+            case 'arbitrum':
+                payerhash = `https://arbiscan.io/tx/${payerHash}`
+                receiverhash = `https://arbiscan.io/tx/${receiverHash}`
+            break;
+            case 'clat':
+                payerhash = `https://bscscan.com/tx/${payerHash}`
+                receiverhash = `https://bscscan.com/tx/${receiverHash}`
+            break;
+        }
+
         const updatedAgreement = await Agreement.findOneAndUpdate(
             { agreementId },
             {
                 $set: {
-                    "hashLink.payer.hash": payerHash,
-                    "hashLink.receiver.hash": receiverHash,
+                    "hashLink.payer.hash": payerhash,
+                    "hashLink.receiver.hash": receiverhash,
                     "hashLink.receiver.image": receiverEvidence,
                     "hashLink.payer.image": payerEvidence,
                     "timeline.disputeResolved": new Date()
