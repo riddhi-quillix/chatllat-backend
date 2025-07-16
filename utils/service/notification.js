@@ -35,7 +35,7 @@ export const notificationWhenStatusChange = async (status, agreement, connectedW
             break;
 
         case "FundsReleased":
-            await createNotification(agreement.receiverWallet, agreementId, "Fund Released", "The payment for your submitted work has been released. You may now withdraw the funds. Before you go, don’t forget to leave a rating for your payer!");
+            await createNotification(agreement.receiverWallet, agreementId, "Withdraw Fund", "The payment for your submitted work has been released. You may now withdraw the funds. Before you go, don’t forget to leave a rating for your payer!");
 
             await createNotification(agreement.payerWallet, agreementId, "Fund Released", "You’ve successfully released the payment. Before you go, don’t forget to leave a rating for your receiver!");
             break;
