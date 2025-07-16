@@ -18,6 +18,7 @@ export const createAgreementSchema = joi.object({
     amountDetails: joi.object().required().keys({
         amount: joi.string().required(),
         chain: joi.string().default("ethereum"),
+        image: joi.string().required(),
     }),
     deadline: joi.date().required(),
     attachments: joi.array(),
