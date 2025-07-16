@@ -43,7 +43,7 @@ export const disputeAdd = async (validatedData, agreement) => {
         await Promise.all([
             Agreement.findOneAndUpdate(
                 { agreementId },
-                { status: "Disputed" },
+                { status: "Disputed", "timeline.disputed": new Date() },
                 { new: true }
             ),
             notificationWhenStatusChange(

@@ -102,6 +102,7 @@ const agreementSchema = new mongoose.Schema(
         amountDetails: {
             amount: { type: String, required: true },
             chain: { type: String, default: "Ethereum" },
+            image: { type: String, default: "https://res.cloudinary.com/doojdskc0/image/upload/v1752645444/j5jrhlf74pbqzqy15lm6.png" }
         },
         split: {
             receiverAmount: { type: Number, default: 0 },
@@ -126,6 +127,40 @@ const agreementSchema = new mongoose.Schema(
         withdrawalUser: {
             type: String,
             default: null
+        },
+        timeline: {
+            created: {
+                type: Date,
+                default: null
+            },
+            responded: {
+                type: Date,
+                default: null
+            },
+            escrowFunded: {
+                type: Date,
+                default: null
+            },
+            workSubmitted: {
+                type: Date,
+                default: null
+            },
+            fundsReleased: {
+                type: Date,
+                default: null
+            },
+            disputed: {
+                type: Date,
+                default: null
+            },
+            disputeResolved: {
+                type: Date,
+                default: null
+            },
+            completed: {
+                type: Date,
+                default: null
+            },
         }
     },
     {

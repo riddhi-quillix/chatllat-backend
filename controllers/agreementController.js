@@ -69,6 +69,7 @@ export const createNewAgreement = asyncHandler(async (req, res, next) => {
                     details: `Agreement created by ${role}`,
                 },
             ],
+            "timeline.created": new Date()
         });
 
         const savedAgreement = await newAgreement.save();
@@ -297,6 +298,7 @@ export const setWorkSubmittedStatus = asyncHandler(async (req, res, next) => {
                 $set: {
                     status: "WorkSubmitted",
                     WorkSubmittedDate: new Date(),
+                    "timeline.workSubmitted": new Date()
                 },
             },
             { new: true }
@@ -331,7 +333,7 @@ export const setFundsReleasedStatus = asyncHandler(async (req, res, next) => {
 
         const updatedAgreement = await Agreement.findOneAndUpdate(
             { agreementId },
-            { $set: { status: "FundsReleased" } },
+            { $set: { status: "FundsReleased", "timeline.fundsReleased": new Date() } },
             { new: true }
         );
         await notificationWhenStatusChange(

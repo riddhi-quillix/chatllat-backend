@@ -82,6 +82,7 @@ export const walletAddressAdd = async (validatedData, agreement) => {
             ...query,
             status,
             cancellationReason,
+            "timeline.responded": new Date()
         };
 
         if (status === "Accepted") {

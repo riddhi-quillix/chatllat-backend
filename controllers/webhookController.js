@@ -87,6 +87,7 @@ async function updateDataWhenFundsIsDeposit(
                     $set: {
                         status: "EscrowFunded",
                         dipositHash: obj.transactionHash,
+                        "timeline.escrowFunded": new Date()
                     },
                 }
             );
@@ -127,6 +128,7 @@ async function updateDataWhenFundsIsWithdraw(
                     $set: {
                         status: "Completed",
                         withdrwalHash: obj.transactionHash,
+                        "timeline.completed": new Date()
                     },
                 }
             );

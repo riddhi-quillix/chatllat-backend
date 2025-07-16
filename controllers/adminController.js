@@ -94,9 +94,10 @@ export const reAssignedDispute = asyncHandler(async (req, res, next) => {
 
         const dispute = await Dispute.findOneAndUpdate(
             { disputeId },
-            { $set: { status: "ReAssigned", reAssignedReason } },
+            { $set: { assignStatus: "ReAssigned", status: "InProcess", reAssignedReason } },
             { new: true }
         );
+        // await Agreement.updateOne({agreementId: dispute.agreementId}, {$set: {split: {}}})
 
         give_response(
             res,
