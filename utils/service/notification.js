@@ -7,7 +7,28 @@ export const createNotification = async (
     message
 ) => {
     await Notification.create({ walletId, agreementId, type, message });
+    
+    if (global.io && global.users && global.users[walletId]) {
+        const unreadCount = await Notification.countDocuments({
+            walletId,
+            read: false,
+        });
+        console.log(unreadCount, "unreadCount===========");
+        
+        global.io
+            .to(global.users[walletId])
+            .emit("unreadNotificationCount", unreadCount);
+    }
 };
+
+// export const createNotification = async (
+//     walletId,
+//     agreementId,
+//     type,
+//     message
+// ) => {
+//     await Notification.create({ walletId, agreementId, type, message });
+// };
 
 export const updateNotification = async (
     agreementId,
@@ -15,10 +36,25 @@ export const updateNotification = async (
     newType,
     message
 ) => {
-    await Notification.updateOne(
+    const notification = await Notification.findOneAndUpdate(
         { agreementId, type: oldType },
         { $set: { type: newType, message, read: false, createdDate: new Date() }},
+        {new: true}
     );
+
+    const walletId = notification?.walletId
+
+    if (global.io && global.users && global.users[walletId]) {  
+        const unreadCount = await Notification.countDocuments({
+            walletId,
+            read: false,
+        });
+        console.log(unreadCount, "unreadCount===========");
+        
+        global.io
+            .to(global.users[walletId])
+            .emit("unreadNotificationCount", unreadCount);
+    }
 };
 
 export const notificationWhenStatusChange = async (
