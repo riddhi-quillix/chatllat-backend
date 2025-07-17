@@ -14,7 +14,7 @@ export const getNotification = asyncHandler(async (req, res, next) => {
                 }
             },
             {
-                $sort: { createdAt: -1 }
+                $sort: { createdDate: -1 }
             },
             {
                 $lookup: {
@@ -46,8 +46,8 @@ export const getNotification = asyncHandler(async (req, res, next) => {
                     type: 1,
                     read: 1,
                     importantNotificationIsRead: 1,
-                    createdAt: 1,
-                    amount: "$agreement.amountDetails.amount"
+                    createdDate: 1,
+                    amountDetails: "$agreement.amountDetails"
                 }
             }
         ])

@@ -18,9 +18,6 @@ const notificationSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
-        // amount: {
-        //     type: String
-        // },
         // isImportant: {
         //     type: Boolean,
         //     default: false
@@ -28,9 +25,13 @@ const notificationSchema = new mongoose.Schema(
         importantNotificationIsRead: {
             type: Boolean,
             default: false
+        },
+        createdDate: {
+            type: Date,
+            default: Date.now
         }
     },
-    { timestamps: true, versionKey: false }
+    { versionKey: false }
 );
 
 const Notification = mongoose.model("Notification", notificationSchema);

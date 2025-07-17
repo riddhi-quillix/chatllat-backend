@@ -4,6 +4,7 @@ import Agreement from "../models/Agreement.js";
 import Notification from "../models/Notification.js";
 import TransectionHistory from "../models/TransectionHistory.js";
 import { parseUnits } from "ethers";
+import { notificationWhenStatusChange } from "../utils/service/notification.js";
 
 async function getTransectionData(reqData) {
     try {
@@ -104,6 +105,12 @@ async function updateDataWhenFundsIsDeposit(
                 },
                 { $set: { importantNotificationIsRead: true } }
             );
+
+            await notificationWhenStatusChange(
+                "EscrowFunded",
+                agreementId,
+                ""
+            );
         } else {
             console.log("amount mismatch");
         }
@@ -136,6 +143,11 @@ async function updateDataWhenFundsIsWithdraw(
             obj.type = "Withdrawal";
             obj.agreementId = agreementId;
             await TransectionHistory.create(obj);
+            await notificationWhenStatusChange(
+                "Completed",
+                agreementId,
+                ""
+            );
         } else {
             console.log("amount mismatch");
         }
@@ -161,7 +173,7 @@ export const transectionConfirmation = asyncHandler(async (req, res, next) => {
                 });
 
                 if (agreement) {
-                    console.log(agreement.agreementId, "agreement===");
+                    console.log(agreement.agreementId, "depositedAgreement===");
                     const { expectedWei, actualWei } = await matchAmount(
                         agreement.amountDetails.amount,
                         obj.value,
