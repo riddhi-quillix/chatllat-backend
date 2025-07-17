@@ -65,6 +65,8 @@ const sendFundDepositNotification = async () => {
                         new: true,
                     }
                 );
+
+                await Agreement.updateOne({agreementId: agreement.agreementId}, {$set: {status: "Rejected"}})
             }
 
             // 3. Create dispute if work was submitted but payment not released within 72 hours
