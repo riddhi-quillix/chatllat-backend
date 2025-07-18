@@ -7,3 +7,4 @@
 **/robots.txt
 node_modules
 **/.env
+*.zip

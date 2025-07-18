@@ -73,6 +73,14 @@ global.users = {};
 io.on("connection", async (socket) => {
     console.log("User connected");
 
+    socket.on("connect_notification_user", async (data) => {
+        console.log(data, "connect_notification_user");
+        console.log(socket.id, "socket.id");
+        global.users[data.userid] = socket.id;
+
+        io.to(socket.id).emit("connect_notification_user", "Notification User connected.");
+    });
+
     // Handle user connection
     socket.on("connect_user", async (data) => {
         console.log(data, "connect_user");
@@ -230,6 +238,16 @@ io.on("connection", async (socket) => {
                 );
             }
         }
+
+        // Remove the user from the global `users` object
+        delete global.users[disconnectedUserId];
+    });
+
+    socket.on("disconnect_notification_user", async () => {
+        console.log(socket.id, " disconnect_notification_user");
+        const disconnectedUserId = Object.keys(global.users).find(
+            (key) => global.users[key] === socket.id
+        );
 
         // Remove the user from the global `users` object
         delete global.users[disconnectedUserId];
