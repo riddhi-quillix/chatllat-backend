@@ -30,15 +30,6 @@ export const getChatList = asyncHandler(async (req, res, next) => {
                         $sum: {
                             $cond: [
                                 { $eq: ["$isGroup", true] }, // If it's a group chat
-                                // {
-                                //     $cond: {
-                                //         if: {
-                                //             $in: [userId, "$groupMsgReadBy"], // Check if userId is in the groupMsgReadBy array
-                                //         },
-                                //         then: 0, // If user has read the message, do nothing
-                                //         else: 1, // If user hasn't read, increment the unread count
-                                //     },
-                                // },
                                 {
                                     $cond: {
                                         if: {
@@ -77,7 +68,22 @@ export const getChatList = asyncHandler(async (req, res, next) => {
             },
             {
                 $project: {
-                    userId: "$_id",
+                    // userId: "$_id",
+                    userId: {
+                        $cond: {
+                            if: { $eq: ["$lastMessage.isGroup", true] },
+                            then: "$lastMessage.groupId", // For group chat, keep it as current user
+                            else: {
+                                $cond: {
+                                    if: {
+                                        $eq: ["$lastMessage.sender", userId],
+                                    },
+                                    then: "$lastMessage.receiver",
+                                    else: "$lastMessage.sender",
+                                },
+                            },
+                        },
+                    },
                     agreementId: "$lastMessage.agreementId",
                     message: "$lastMessage.msg",
                     image: "$lastMessage.image",
@@ -118,23 +124,33 @@ export const getChatList = asyncHandler(async (req, res, next) => {
 //                 $group: {
 //                     _id: {
 //                         $cond: {
-//                             if: { $eq: ["$isGroup", true] },
-//                             then: "$groupId", // group chat grouped by groupId
-//                             else: "$agreementId", // personal chat grouped by agreementId
+//                             if: { $eq: ["$isGroup", true] }, // If it's a group chat, group by groupId
+//                             then: "$groupId", // Group by groupId for group chats
+//                             else: "$agreementId",
 //                         },
 //                     },
-//                     lastMessage: { $last: "$$ROOT" },
+//                     lastMessage: { $last: "$$ROOT" }, // Get the last message in the conversation
 //                     unreadCount: {
 //                         $sum: {
 //                             $cond: [
-//                                 { $eq: ["$isGroup", true] },
+//                                 { $eq: ["$isGroup", true] }, // If it's a group chat
 //                                 {
 //                                     $cond: {
 //                                         if: {
-//                                             $in: [userId, "$groupMsgReadBy"],
+//                                             $and: [
+//                                                 { $ne: ["$sender", userId] }, // 🛑 Don't count if sender is the current user
+//                                                 {
+//                                                     $not: {
+//                                                         $in: [
+//                                                             userId,
+//                                                             "$groupMsgReadBy",
+//                                                         ],
+//                                                     },
+//                                                 }, // User has NOT read it
+//                                             ],
 //                                         },
-//                                         then: 0,
-//                                         else: 1,
+//                                         then: 1,
+//                                         else: 0,
 //                                     },
 //                                 },
 //                                 {
@@ -142,7 +158,7 @@ export const getChatList = asyncHandler(async (req, res, next) => {
 //                                         if: {
 //                                             $and: [
 //                                                 { $eq: ["$read", false] },
-//                                                 { $ne: ["$sender", userId] },
+//                                                 { $ne: ["$sender", userId] }, // Only count messages not sent by this user
 //                                             ],
 //                                         },
 //                                         then: 1,
@@ -155,11 +171,8 @@ export const getChatList = asyncHandler(async (req, res, next) => {
 //                 },
 //             },
 //             {
-//                 $sort: { "lastMessage.createdAt": -1 }, // Optional: Sort chat list by latest message
-//             },
-//             {
 //                 $project: {
-//                     chatId: "$_id",
+//                     userId: "$_id",
 //                     agreementId: "$lastMessage.agreementId",
 //                     message: "$lastMessage.msg",
 //                     image: "$lastMessage.image",
@@ -168,7 +181,7 @@ export const getChatList = asyncHandler(async (req, res, next) => {
 //                     groupName: "$lastMessage.groupName",
 //                     groupId: "$lastMessage.groupId",
 //                     createdAt: "$lastMessage.createdAt",
-//                     unreadCount: 1,
+//                     unreadCount: 1, // Include unread message count in the result
 //                 },
 //             },
 //         ]);
