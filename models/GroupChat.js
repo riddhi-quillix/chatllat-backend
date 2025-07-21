@@ -6,6 +6,9 @@ const ChatGroupSchema = new mongoose.Schema(
 			type: String,
 			default: null
 		},
+		agreementId: {
+			type: String,
+		},
 		groupName: {
 			type: String
 		},

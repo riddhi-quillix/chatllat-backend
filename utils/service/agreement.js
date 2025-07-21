@@ -97,28 +97,42 @@ export const walletAddressAdd = async (validatedData, agreement) => {
         );
 
         if (status == "Accepted" || status == "Negotiated") {
-            const existingChat = await Chat.findOne({
-                $or: [
-                    {
-                        sender: updatedAgreement.payerWallet,
-                        receiver: updatedAgreement.receiverWallet,
-                    },
-                    {
-                        sender: updatedAgreement.receiverWallet,
-                        receiver: updatedAgreement.payerWallet,
-                    },
-                ],
-            });
+            const existingChat = await Chat.findOne({agreementId, isGroup: false});
 
             if (!existingChat) {
                 await Chat.create({
                     sender: updatedAgreement.payerWallet,
                     receiver: updatedAgreement.receiverWallet,
                     msg: "",
-                    read: true
+                    read: true,
+                    agreementId
                 });
             }
         }
+
+        // if (status == "Accepted" || status == "Negotiated") {
+        //     const existingChat = await Chat.findOne({
+        //         $or: [
+        //             {
+        //                 sender: updatedAgreement.payerWallet,
+        //                 receiver: updatedAgreement.receiverWallet,
+        //             },
+        //             {
+        //                 sender: updatedAgreement.receiverWallet,
+        //                 receiver: updatedAgreement.payerWallet,
+        //             },
+        //         ],
+        //     });
+
+        //     if (!existingChat) {
+        //         await Chat.create({
+        //             sender: updatedAgreement.payerWallet,
+        //             receiver: updatedAgreement.receiverWallet,
+        //             msg: "",
+        //             read: true
+        //         });
+        //     }
+        // }
 
         await notificationWhenStatusChange(
             status,

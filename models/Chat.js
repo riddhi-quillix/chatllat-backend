@@ -4,6 +4,7 @@ const chatSchema = new mongoose.Schema(
 	{
 		agreementId: {
 			type: String,
+			default: null
 		},
 		sender: {
 			type: String,

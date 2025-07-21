@@ -131,11 +131,11 @@ io.on("connection", async (socket) => {
     // Handle sending a group message (group chat)
     socket.on("sendGroupMessage", async (data) => {
         try {
-            const { groupId, sender, msg, image, document, agreementId } = data;
+            const { sender, msg, image, document, agreementId } = data;
 
             console.log(data, "sendGroupMessage===");
 
-            if (!groupId || !sender || !agreementId) {
+            if (!sender || !agreementId) {
                 return io
                     .to(socket.id)
                     .emit(
@@ -144,14 +144,12 @@ io.on("connection", async (socket) => {
                     );
             }
 
-            // Emit the message to all users in the group (using the groupId as the room)
-            socket.to(groupId).emit("receiveGroupMessage", data);
+            // Emit the message to all users in the group (using the agreementId as the room)
+            socket.to(agreementId).emit("receiveGroupMessage", data);
 
-            const groupChat = await GroupChat.findOne({ groupId });
-            console.log(groupChat, "groupchat===");
-
+            const groupChat = await GroupChat.findOne({ agreementId });
             const messagebody = {
-                groupId,
+                groupId: groupChat.groupId,
                 agreementId,
                 sender: sender,
                 msg: msg || "",
@@ -174,14 +172,11 @@ io.on("connection", async (socket) => {
     });
 
     // Handle joining a group
-    socket.on("joinGroup", async (groupId) => {
-        // Join the specified group chat room
-        console.log(groupId.groupId, "groupId===========");
-
-        socket.join(groupId.groupId);
+    socket.on("joinGroup", async (agreementId) => {
+        socket.join(agreementId.agreementId);
 
         // Emit an event to notify others that a user has joined the group
-        io.to(groupId.groupId).emit(
+        io.to(agreementId.agreementId).emit(
             "newUserJoined",
             `User ${socket.id} joined the group.`
         );

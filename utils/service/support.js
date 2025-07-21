@@ -283,9 +283,7 @@ export const splitAmount = async (validatedData, agreement) => {
 export const createGroupChat = async (agreementId) => {
       try {
         // Check if group chat already exists for the agreement
-        const existingGroupChat = await GroupChat.findOne({
-            groupId: agreementId,
-        });
+        const existingGroupChat = await GroupChat.findOne({ agreementId, isGroup: true });
 
         let groupChat;
         if (!existingGroupChat) {
@@ -293,7 +291,8 @@ export const createGroupChat = async (agreementId) => {
             const agreement = await Agreement.findOne({ agreementId });
             
             groupChat = await GroupChat.create({
-                groupId: agreementId,
+                groupId:  `grp-${agreementId}`,
+                agreementId,
                 groupName: `Dispute Resolve - ${agreement.projectTitle}`,
                 groupMember: [
                     dispute.payerWalletAddress,
@@ -302,8 +301,9 @@ export const createGroupChat = async (agreementId) => {
                 ],
             });
 
-             const messagebody = {
+            const messagebody = {
                 groupId: groupChat.groupId,
+                agreementId,
                 sender: "",
                 msg: "Welcome to the chat",
                 image: "",
