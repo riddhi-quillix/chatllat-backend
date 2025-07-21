@@ -115,6 +115,7 @@ export const walletAddressAdd = async (validatedData, agreement) => {
                     sender: updatedAgreement.payerWallet,
                     receiver: updatedAgreement.receiverWallet,
                     msg: "",
+                    read: true
                 });
             }
         }

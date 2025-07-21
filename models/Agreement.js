@@ -30,13 +30,13 @@ const agreementSchema = new mongoose.Schema(
             name: { type: String, default: "" },
             email: { type: String, default: "" },
             contact: { type: String, default: "" },
-            isOnline: { type: Boolean, default: 0 }, // 0 = offline, 1 = online
+            // isOnline: { type: Boolean, default: 0 }, // 0 = offline, 1 = online
         },
         receiverDetails: {
             name: { type: String, default: "" },
             email: { type: String, default: "" },
             contact: { type: String, default: "" },
-            isOnline: { type: Boolean, default: 0 },  // 0 = offline, 1 = online
+            // isOnline: { type: Boolean, default: 0 },  // 0 = offline, 1 = online
         },
         projectTitle: {
             type: String,

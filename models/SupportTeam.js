@@ -28,10 +28,10 @@ const supportTeamSchema = new mongoose.Schema(
             type: String,
             select: false
         },
-        isOnline: { 
-            type: Boolean, 
-            default: 0     // 0 = offline, 1 = online
-        },
+        // isOnline: { 
+        //     type: Boolean, 
+        //     default: 0     // 0 = offline, 1 = online
+        // },
         assignedDispute: {
             type: [String],
             default: []

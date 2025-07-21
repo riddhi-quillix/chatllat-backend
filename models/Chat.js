@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 
 const chatSchema = new mongoose.Schema(
 	{
+		agreementId: {
+			type: String,
+		},
 		sender: {
 			type: String,
 		},

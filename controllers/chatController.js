@@ -15,7 +15,7 @@ import Chat from "../models/Chat.js";
 //         if (!existingGroupChat) {
 //             const dispute = await Dispute.findOne({ agreementId });
 //             const agreement = await Agreement.findOne({ agreementId });
-            
+
 //             groupChat = await GroupChat.create({
 //                 groupId: agreementId,
 //                 groupName: `Dispute Resolve - ${agreement.projectTitle}`,
@@ -37,7 +37,7 @@ import Chat from "../models/Chat.js";
 
 // export const getChatList = asyncHandler(async (req, res, next) => {
 //     const userId = req.query.connectedWalletId;
-    
+
 //     try {
 //         const chatList = await Chat.aggregate([
 //             {
@@ -153,11 +153,23 @@ export const getChatList = asyncHandler(async (req, res, next) => {
                                 },
                                 {
                                     $cond: {
-                                        if: { $eq: ["$read", false] }, // If it's a personal chat and the message is unread
+                                        if: {
+                                            $and: [
+                                                { $eq: ["$read", false] },
+                                                { $ne: ["$sender", userId] }, // Only count messages not sent by this user
+                                            ],
+                                        },
                                         then: 1,
                                         else: 0,
                                     },
                                 },
+                                // {
+                                //     $cond: {
+                                //         if: { $eq: ["$read", false] }, // If it's a personal chat and the message is unread
+                                //         then: 1,
+                                //         else: 0,
+                                //     },
+                                // },
                             ],
                         },
                     },
@@ -166,6 +178,7 @@ export const getChatList = asyncHandler(async (req, res, next) => {
             {
                 $project: {
                     userId: "$_id",
+                    agreementId: "$lastMessage.agreementId",
                     message: "$lastMessage.msg",
                     image: "$lastMessage.image",
                     document: "$lastMessage.document",
@@ -189,18 +202,13 @@ export const getChatList = asyncHandler(async (req, res, next) => {
 
 export const getPersonalChatMessages = asyncHandler(async (req, res, next) => {
     try {
-        const { sender, receiver } = req.query;
+        const { sender, receiver, agreementId } = req.query;
         await Chat.updateMany(
-            { sender: receiver, receiver: sender },
+            { sender: receiver, receiver: sender, agreementId },
             { read: true }
         );
 
-        const messages = await Chat.find({
-            $or: [
-                { sender: sender, receiver: receiver },
-                { sender: receiver, receiver: sender },
-            ],
-        });
+        const messages = await Chat.find({ agreementId });
         return give_response(res, 200, true, "Messages get successfully", {
             messages,
         });
@@ -209,9 +217,31 @@ export const getPersonalChatMessages = asyncHandler(async (req, res, next) => {
     }
 });
 
+// export const getPersonalChatMessages = asyncHandler(async (req, res, next) => {
+//     try {
+//         const { sender, receiver } = req.query;
+//         await Chat.updateMany(
+//             { sender: receiver, receiver: sender },
+//             { read: true }
+//         );
+
+//         const messages = await Chat.find({
+//             $or: [
+//                 { sender: sender, receiver: receiver },
+//                 { sender: receiver, receiver: sender },
+//             ],
+//         });
+//         return give_response(res, 200, true, "Messages get successfully", {
+//             messages,
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
 export const getChatMessages = asyncHandler(async (req, res, next) => {
     try {
-        const { sender, receiver, groupId } = req.query; // sender id = connected wallet id
+        const { sender, receiver, groupId, agreementId } = req.query; // sender id = connected wallet id
 
         let messages;
         if (groupId) {
@@ -263,16 +293,20 @@ export const getChatMessages = asyncHandler(async (req, res, next) => {
             ]);
         } else {
             await Chat.updateMany(
-                { sender: receiver, receiver: sender },
+                { sender: receiver, receiver: sender, agreementId },
                 { read: true }
             );
 
-            messages = await Chat.find({
-                $or: [
-                    { sender: sender, receiver: receiver },
-                    { sender: receiver, receiver: sender },
-                ],
-            }).select("sender receiver msg image document read createdAt");
+            // messages = await Chat.find({
+            //     $or: [
+            //         { sender: sender, receiver: receiver },
+            //         { sender: receiver, receiver: sender },
+            //     ],
+            // }).select("sender receiver msg image document read createdAt");
+
+            messages = await Chat.find({ agreementId }).select(
+                "sender receiver msg image document read createdAt"
+            );
         }
 
         return give_response(res, 200, true, "Messages get successfully", {
