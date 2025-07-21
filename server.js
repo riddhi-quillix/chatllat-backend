@@ -88,30 +88,6 @@ io.on("connection", async (socket) => {
         console.log(socket.id, "socket.id");
         global.users[data.userid] = socket.id;
 
-        // const agreementData = await Agreement.findOne({
-        //     $or: [
-        //         { payerWallet: data.userid },
-        //         { receiverWallet: data.userid },
-        //     ],
-        // });
-
-        // if (!agreementData) {
-        //     if (!mongoose.Types.ObjectId.isValid(data.userid)) return;
-        //     await SupportTeam.updateOne({ _id: data.userid }, { isOnline: 1 });
-        // } else {
-        //     if (data.userid === agreementData?.payerWallet) {
-        //         await Agreement.updateOne(
-        //             { payerWallet: data.userid },
-        //             { "payerDetails.isOnline": 1 }
-        //         );
-        //     } else {
-        //         await Agreement.updateOne(
-        //             { receiverWallet: data.userid },
-        //             { "receiverDetails.isOnline": 1 }
-        //         );
-        //     }
-        // }
-
         socket.broadcast.emit("userOnline", data.userid);
         io.to(socket.id).emit("connect_user", "User connected.");
     });
@@ -218,35 +194,6 @@ io.on("connection", async (socket) => {
             (key) => global.users[key] === socket.id
         );
 
-        // const agreementData = await Agreement.findOne({
-        //     $or: [
-        //         { payerWallet: disconnectedUserId },
-        //         { receiverWallet: disconnectedUserId },
-        //     ],
-        // });
-
-        // if (!agreementData) {
-        //     if (!mongoose.Types.ObjectId.isValid(data.userid)) return;
-        //     await SupportTeam.updateOne(
-        //         { _id: disconnectedUserId },
-        //         { isOnline: 0 }
-        //     );
-        // } else {
-        //     if (disconnectedUserId === agreementData?.payerWallet) {
-        //         await Agreement.updateOne(
-        //             { payerWallet: disconnectedUserId },
-        //             { "payerDetails.isOnline": 0 }
-        //         );
-        //     } else {
-        //         await Agreement.updateOne(
-        //             { receiverWallet: disconnectedUserId },
-        //             { "receiverDetails.isOnline": 0 }
-        //         );
-        //     }
-        // }
-
-        // ADD THIS: Notify others that user is offline
-        
         socket.broadcast.emit("userOffline", disconnectedUserId);
         // Remove the user from the global `users` object
         delete global.users[disconnectedUserId];

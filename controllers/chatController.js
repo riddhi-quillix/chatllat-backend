@@ -284,6 +284,7 @@ export const getChatMessages = asyncHandler(async (req, res, next) => {
                         read: 1,
                         isGroup: 1,
                         groupId: 1,
+                        agreementId: 1,
                         groupName: 1,
                         groupMember: 1,
                         groupMsgReadBy: 1,
@@ -305,7 +306,7 @@ export const getChatMessages = asyncHandler(async (req, res, next) => {
             // }).select("sender receiver msg image document read createdAt");
 
             messages = await Chat.find({ agreementId }).select(
-                "sender receiver msg image document read createdAt"
+                "sender receiver msg image document read createdAt agreementId"
             );
         }
 
