@@ -100,7 +100,7 @@ export const getAgreementById = asyncHandler(async (req, res, next) => {
         const { id } = req.params;
         const agreement = await Agreement.findOne({
             agreementId: id,
-            status: { $ne: "Rejected" },
+            // status: { $ne: "Rejected" },
         });
 
         if (!agreement) {

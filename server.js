@@ -109,6 +109,7 @@ io.on("connection", async (socket) => {
                 );
             }
         }
+        socket.broadcast.emit("userOnline", data.userid);
 
         io.to(socket.id).emit("connect_user", "User connected.");
     });
@@ -239,6 +240,9 @@ io.on("connection", async (socket) => {
             }
         }
 
+        // ADD THIS: Notify others that user is offline
+        socket.broadcast.emit("userOffline", disconnectedUserId);
+
         // Remove the user from the global `users` object
         delete global.users[disconnectedUserId];
     });
@@ -251,6 +255,30 @@ io.on("connection", async (socket) => {
 
         // Remove the user from the global `users` object
         delete global.users[disconnectedUserId];
+    });
+
+    // ADD this typing handler in your io.on("connection") block:
+    socket.on("typing", async (data) => {
+        console.log('👀 Typing event received:', data);
+        const { sender, receiver, isTyping } = data;
+
+        // Send typing status to the receiver
+        if (global.users[receiver]) {
+            console.log('📤 Forwarding typing to:', receiver, 'isTyping:', isTyping);
+            socket.to(global.users[receiver]).emit("userTyping", {
+                userId: sender,
+                isTyping: isTyping
+            });
+        } else {
+            console.log('❌ Receiver not found in global.users:', receiver);
+        }
+    });
+
+    // ADD this to your socket handlers:
+    socket.on("checkUserOnline", (userId) => {
+        const isOnline = global.users[userId] ? true : false;
+        console.log(`🔍 Checking if ${userId} is online: ${isOnline}`);
+        socket.emit("userOnlineStatus", { userId, isOnline });
     });
 });
 
