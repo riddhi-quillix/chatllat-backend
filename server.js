@@ -25,6 +25,7 @@ import errorHandler from "./helper/error.js";
 import bodyParser from "body-parser";
 import sendFundDepositNotification from "./utils/service/cron.js";
 import GroupChat from "./models/GroupChat.js";
+import mongoose from "mongoose";
 sendFundDepositNotification();
 
 const PORT = process.env.PORT || 5000;
@@ -95,6 +96,7 @@ io.on("connection", async (socket) => {
         });
 
         if (!agreementData) {
+            if (!mongoose.Types.ObjectId.isValid(data.userid)) return;
             await SupportTeam.updateOne({ _id: data.userid }, { isOnline: 1 });
         } else {
             if (data.userid === agreementData?.payerWallet) {
@@ -222,6 +224,7 @@ io.on("connection", async (socket) => {
         });
 
         if (!agreementData) {
+            if (!mongoose.Types.ObjectId.isValid(data.userid)) return;
             await SupportTeam.updateOne(
                 { _id: disconnectedUserId },
                 { isOnline: 0 }
