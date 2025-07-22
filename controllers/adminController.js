@@ -1,7 +1,7 @@
 import asyncHandler from "../helper/async.js";
 import give_response from "../helper/help.js";
 import bcryptjs from "bcryptjs";
-import { generateToken } from "../lib/utils.js";
+import { generateToken } from "../utils/service/utils.js";
 import Admin from "../models/Admin.js";
 import SupportTeam from "../models/SupportTeam.js";
 import {

@@ -15,7 +15,7 @@ import {
     // signupSchema,
     // verifyForgotOtpSchema,
 } from "../utils/validation/supportTeam_validation.js";
-import { generateToken } from "../lib/utils.js";
+import { generateToken } from "../utils/service/utils.js";
 // import { otp_genrator } from "../utils/service/agreement.js";
 // import signupOtpMail from "../utils/email_template/signup_otp.js";
 // import { sendEmail } from "../utils/service/sendEmail.js";
