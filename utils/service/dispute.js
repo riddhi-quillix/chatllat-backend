@@ -79,8 +79,8 @@ export const evidenceAdd = async (validatedData, dispute) => {
             updateField[`reasons.${reasonKey}`] = reason;
         }
         updateField.status = "InProcess";
-        updateField.date = updateField.date || {};
-        updateField.date.inProcess = new Date();
+        // updateField.date = updateField.date || {};
+        updateField["date.inProcess"] = new Date();
 
         await Dispute.updateOne({ agreementId }, { $set: updateField });
         await Agreement.updateOne(

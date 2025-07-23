@@ -103,26 +103,6 @@ const disputeSchema = new mongoose.Schema(
                 type: Date,
                 default: null
             },
-            // responded: {
-            //     type: Date,
-            //     default: null
-            // },
-            // payerSubmittedProof: {
-            //     type: Date,
-            //     default: null
-            // },
-            // receiverSubmittedProof: {
-            //     type: Date,
-            //     default: null
-            // },
-            // DisputeEscalated: {
-            //     type: Date,
-            //     default: null
-            // },
-            // Resolved: {
-            //     type: Date,
-            //     default: null
-            // },
         }
     },
     { timestamps: true, versionKey: false }
