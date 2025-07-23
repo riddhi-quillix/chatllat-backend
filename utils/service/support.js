@@ -273,6 +273,7 @@ export const splitAmount = async (validatedData, agreement) => {
                 assignStatus: "Resolved",
                 status: "Resolved",
                 supportDecision: decision,
+                "date.resolved": new Date()
             },
         }
     );

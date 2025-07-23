@@ -87,26 +87,42 @@ const disputeSchema = new mongoose.Schema(
             default: null
         },
         date: {
-            responded: {
+            disputed: {
+                type: Date,
+                default: Date.now
+            },
+            inProcess: {
                 type: Date,
                 default: null
             },
-            payerSubmittedProof: {
+            resolved: {
                 type: Date,
                 default: null
             },
-            receiverSubmittedProof: {
+            completed: {
                 type: Date,
                 default: null
             },
-            DisputeEscalated: {
-                type: Date,
-                default: null
-            },
-            Resolved: {
-                type: Date,
-                default: null
-            },
+            // responded: {
+            //     type: Date,
+            //     default: null
+            // },
+            // payerSubmittedProof: {
+            //     type: Date,
+            //     default: null
+            // },
+            // receiverSubmittedProof: {
+            //     type: Date,
+            //     default: null
+            // },
+            // DisputeEscalated: {
+            //     type: Date,
+            //     default: null
+            // },
+            // Resolved: {
+            //     type: Date,
+            //     default: null
+            // },
         }
     },
     { timestamps: true, versionKey: false }

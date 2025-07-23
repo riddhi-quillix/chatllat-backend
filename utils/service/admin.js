@@ -57,6 +57,8 @@ export const addHashLink = async (validatedData, chain) => {
             { new: true }
         ).select("agreementId hashLink");
 
+        await Dispute.updateOne({agreementId}, {$set: {assignStatus: "Completed", "date.completed": new Date()}})
+        
         return updatedAgreement;
     } catch (error) {
         throw error;

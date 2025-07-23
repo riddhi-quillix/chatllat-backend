@@ -101,17 +101,18 @@ export const updateEvidence = asyncHandler(async (req, res, next) => {
             connectedWalletId === dispute.payerWalletAddress
                 ? "payerEvidence"
                 : "receiverEvidence";
-        const dateField =
-            connectedWalletId === dispute.payerWalletAddress
-                ? "payerSubmittedProof"
-                : "receiverSubmittedProof";
+                
+        // const dateField =
+        //     connectedWalletId === dispute.payerWalletAddress
+        //         ? "payerSubmittedProof"
+        //         : "receiverSubmittedProof";
 
         const updatedDispute = await Dispute.findOneAndUpdate(
             { disputeId },
             {
                 $set: {
                     [`evidence.${field}`]: evidence,
-                    [`date.${dateField}`]: new Date(),
+                    // [`date.${dateField}`]: new Date(),
                 },
             },
             { new: true }

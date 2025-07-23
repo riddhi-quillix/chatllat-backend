@@ -80,7 +80,7 @@ export const evidenceAdd = async (validatedData, dispute) => {
         }
         updateField.status = "InProcess";
         updateField.date = updateField.date || {};
-        updateField.date.responded = new Date();
+        updateField.date.inProcess = new Date();
 
         await Dispute.updateOne({ agreementId }, { $set: updateField });
         await Agreement.updateOne(
