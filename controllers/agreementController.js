@@ -85,10 +85,6 @@ export const createNewAgreement = asyncHandler(async (req, res, next) => {
         return res.status(201).json({
             success: true,
             agreement: savedAgreement,
-            shareableLink: `${req.protocol}://${req.get(
-                "host"
-            )}/view-agreement/${agreementId}`,
-            newShareLink: `http://localhost:5174/view-agreement/${agreementId}`
         });
     } catch (error) {
         next(error);
