@@ -27,13 +27,14 @@ export const uploadFile = asyncHandler(async (req, res, next) => {
 
             const params = {
                 Bucket: process.env.AWS_BUCKET_NAME,
-                Key: fileName,
+                // Key: fileName,
+                Key: `media/${fileName}`,
                 Body: file.buffer,
                 ContentType: file.mimetype,
             };
 
             await s3.send(new PutObjectCommand(params));
-            return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+            return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/media/${fileName}`;
         });
 
         const imgUrls = await Promise.all(uploadPromises);
