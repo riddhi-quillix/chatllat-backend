@@ -10,7 +10,7 @@ const supportTeamSchema = new mongoose.Schema(
         profileImage: {
             type: String,
             default:
-                "https://res.cloudinary.com/doojdskc0/image/upload/v1748344691/e5js3xkuomoztoysrtaf.png",
+                "https://chatllat.s3.ap-south-1.amazonaws.com/static-img/273242097529.png",
         },
         fname: {
             type: String,

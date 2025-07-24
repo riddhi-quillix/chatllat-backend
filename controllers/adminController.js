@@ -24,7 +24,6 @@ import { allTicketSchema } from "../utils/validation/supportTeam_validation.js";
 import supportUserCredentialMail from "../utils/email_template/supportUserCredential.js";
 import { sendEmail } from "../utils/service/sendEmail.js";
 import { generatesupportId } from "../utils/service/agreement.js";
-import changePasswordMail from "../utils/email_template/change_password.js";
 
 export const createAdmin = asyncHandler(async (req, res, next) => {
     try {
