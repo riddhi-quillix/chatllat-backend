@@ -27,7 +27,7 @@ export const uploadFile = asyncHandler(async (req, res, next) => {
 
             const params = {
                 Bucket: process.env.AWS_BUCKET_NAME,
-                Key: `static-img/${fileName}`,
+                Key: `media/${fileName}`,
                 // Key: `media/${fileName}`,
                 Body: file.buffer,
                 ContentType: file.mimetype,
