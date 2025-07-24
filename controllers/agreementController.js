@@ -537,9 +537,14 @@ export const cancelAgreement = asyncHandler(async (req, res, next) => {
         const cancelledBy =
             connectedWalletId === agreement.payerWallet ? "Payer" : "Receiver";
         const status =
-            cancelledBy === "Payer" || agreement.status !== "EscrowFunded"
-                ? "Rejected"
-                : "ReturnFunds";
+            cancelledBy === "Receiver" && agreement.status === "EscrowFunded"
+                ? "ReturnFunds"
+                : "Rejected";
+
+        // const status =
+        //     cancelledBy === "Payer" || agreement.status !== "EscrowFunded"
+        //         ? "Rejected"
+        //         : "ReturnFunds";
 
         await Agreement.updateOne(
             { agreementId },
