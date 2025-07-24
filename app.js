@@ -172,11 +172,11 @@ io.on("connection", async (socket) => {
     });
 
     // Handle joining a group
-    socket.on("joinGroup", async (agreementId) => {
-        socket.join(agreementId.agreementId);
+    socket.on("joinGroup", async (data) => {
+        socket.join(data.agreementId);
 
         // Emit an event to notify others that a user has joined the group
-        io.to(agreementId.agreementId).emit(
+        io.to(data.agreementId).emit(
             "newUserJoined",
             `User ${socket.id} joined the group.`
         );
@@ -304,7 +304,7 @@ io.on("connection", async (socket) => {
 // });
 
 app.get('/', (req, res) => {
-    res.send(`backend deployed on port${PORT}`)
+    res.send(`backend deployed on port ${PORT}`)
 });
 
 server.listen(PORT, () => console.log("Server is running on PORT: " + PORT));
