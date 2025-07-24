@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.850.0",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cloudinary": "^2.6.1",
@@ -22,15 +23,13 @@
     "express": "^5.1.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "mime-types": "^3.0.1",
     "mongoose": "^8.14.2",
     "moralis": "^2.27.2",
-    "multer": "^2.0.0",
+    "multer": "^2.0.2",
     "node-cron": "^4.0.7",
     "nodemailer": "^7.0.3",
     "nodemon": "^3.1.10",
     "socket.io": "^4.8.1",
-    "streamifier": "^0.1.1",
     "uuid": "^11.1.0"
   }
 }

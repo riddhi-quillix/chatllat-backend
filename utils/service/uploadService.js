@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
-import streamifier from 'streamifier'
-import mime from 'mime-types';
+import crypto from "crypto";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,18 +7,14 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export const uploadToCloudinary = (buffer, originalname) => {
-    const fileType = mime.lookup(originalname);
-    let resourceType = 'auto';
-
-    return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-            { resource_type: resourceType },
-            (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
-            }
-        );
-        streamifier.createReadStream(buffer).pipe(stream);
-    });
+export const generateImageId = () => {
+    try {
+        const bytes = crypto.randomBytes(6); // 6 bytes = 12 hex digits ~ 18 decimal digits
+        const number = BigInt("0x" + bytes.toString("hex"))
+            .toString()
+            .slice(0, 12);
+        return number.padStart(12, "0");
+    } catch (error) {
+        throw error;
+    }
 };
