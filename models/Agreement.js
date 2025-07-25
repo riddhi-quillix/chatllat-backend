@@ -161,6 +161,14 @@ const agreementSchema = new mongoose.Schema(
                 type: Date,
                 default: null
             },
+        },
+        requestedDepositDate: {
+            type: Date,
+            default: null
+        },
+        requestedWithdrawalDate: {
+            type: Date,
+            default: null
         }
     },
     {

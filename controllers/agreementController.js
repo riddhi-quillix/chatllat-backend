@@ -229,14 +229,14 @@ export const requestDeposit = asyncHandler(async (req, res, next) => {
 
         const agreement = await Agreement.findOne({
             agreementId,
-            status: "Accepted",
+            status: { $in: ["Accepted", "RequestedDeposit"] },
         });
         if (!agreement)
             return give_response(res, 404, false, "Agreement not found");
 
         const updatedAgreement = await Agreement.findOneAndUpdate(
             { agreementId },
-            { $set: { status: "RequestedDeposit" } },
+            { $set: { status: "RequestedDeposit", requestedDepositDate: new Date() } },
             { new: true }
         );
         return give_response(res, 200, true, "Status updated successfully", {

@@ -88,7 +88,7 @@ async function updateDataWhenFundsIsDeposit(
                     $set: {
                         status: "EscrowFunded",
                         dipositHash: obj.transactionHash,
-                        "timeline.escrowFunded": new Date()
+                        "timeline.escrowFunded": new Date(),
                     },
                 }
             );
@@ -106,11 +106,7 @@ async function updateDataWhenFundsIsDeposit(
                 { $set: { importantNotificationIsRead: true } }
             );
 
-            await notificationWhenStatusChange(
-                "EscrowFunded",
-                agreementId,
-                ""
-            );
+            await notificationWhenStatusChange("EscrowFunded", agreementId, "");
         } else {
             console.log("amount mismatch");
         }
@@ -135,7 +131,7 @@ async function updateDataWhenFundsIsWithdraw(
                     $set: {
                         status: "Completed",
                         withdrwalHash: obj.transactionHash,
-                        "timeline.completed": new Date()
+                        "timeline.completed": new Date(),
                     },
                 }
             );
@@ -143,11 +139,7 @@ async function updateDataWhenFundsIsWithdraw(
             obj.type = "Withdrawal";
             obj.agreementId = agreementId;
             await TransectionHistory.create(obj);
-            await notificationWhenStatusChange(
-                "Completed",
-                agreementId,
-                ""
-            );
+            await notificationWhenStatusChange("Completed", agreementId, "");
         } else {
             console.log("amount mismatch");
         }
@@ -167,13 +159,18 @@ export const transectionConfirmation = asyncHandler(async (req, res, next) => {
                 const obj = await getTransectionData(reqData);
                 console.log(obj, "obj====");
 
-                const agreement = await Agreement.findOne({
+                const agreements = await Agreement.find({
                     status: "RequestedDeposit",
                     payerWallet: obj.fromAddress,
-                });
+                })
+                    .sort({ requestedDepositDate: -1 })
+                    .limit(1);
 
-                if (agreement) {
+                if (agreements.length > 0) {
+                    const agreement = agreements[0]
+
                     console.log(agreement.agreementId, "depositedAgreement===");
+                    
                     const { expectedWei, actualWei } = await matchAmount(
                         agreement.amountDetails.amount,
                         obj.value,
@@ -193,22 +190,23 @@ export const transectionConfirmation = asyncHandler(async (req, res, next) => {
                 const obj = await getWithdrawalData(reqData);
                 console.log(obj, "obj====");
 
-                const withdrawalAgreement = await Agreement.findOne({
+                const withdrawalAgreements = await Agreement.find({
                     status: "RequestedWithdrawal",
                     $or: [
                         { receiverWallet: obj.fromAddress },
                         { payerWallet: obj.fromAddress },
                     ],
-                    // receiverWallet: obj.fromAddress,
-                    // payerWallet: obj.fromAddress,
-                });
+                })
+                    .sort({ requestedWithdrawalDate: -1 })
+                    .limit(1);
+                    
+                if (withdrawalAgreements.length > 0) {
+                    const withdrawalAgreement = withdrawalAgreements[0]
 
-                if (withdrawalAgreement) {
                     console.log(
                         withdrawalAgreement.agreementId,
                         "withdrawalAgreement"
                     );
-
                     const { expectedWei, actualWei } = await matchAmount(
                         withdrawalAgreement.amountDetails.amount,
                         obj.value,
@@ -232,61 +230,74 @@ export const transectionConfirmation = asyncHandler(async (req, res, next) => {
 
 // export const transectionConfirmation = asyncHandler(async (req, res, next) => {
 //     try {
-//         const reqData = req.body
+//         const reqData = req.body;
 //         console.log(reqData, "req.body======");
-//         // console.log(reqData.txs[0].triggered_by, "======111");
 
 //         if (reqData.confirmed == true) {
-//             const obj = {
-//                 chainId: reqData.chainId,
-//                 transactionHash: reqData.erc20Transfers[0].transactionHash,
-//                 gas: reqData.txs[0].gas,
-//                 // gasPrice: reqData.txs[0].gasPrice,
-//                 transactionIndex: reqData.txs[0].transactionIndex,
-//                 fromAddress: reqData.erc20Transfers[0].from,
-//                 toAddress: reqData.erc20Transfers[0].to,
-//                 value: reqData.erc20Transfers[0].value,
-//                 tokenName: reqData.erc20Transfers[0].tokenName,
-//                 tokenSymbol: reqData.erc20Transfers[0].tokenSymbol,
-//                 tokenDecimals: reqData.erc20Transfers[0].tokenDecimals,
-//                 valueWithDecimals: reqData.erc20Transfers[0].valueWithDecimals,
-//                 receiptStatus: reqData.txs[0].receiptStatus,
+//             if (reqData.erc20Transfers[0].to == process.env.ADMIN_WALLET_ID) {
+//                 // for deposit
+//                 const obj = await getTransectionData(reqData);
+//                 console.log(obj, "obj====");
+
+//                 const agreement = await Agreement.findOne({
+//                     status: "RequestedDeposit",
+//                     payerWallet: obj.fromAddress,
+//                 });
+
+//                 if (agreement) {
+//                     console.log(agreement.agreementId, "depositedAgreement===");
+//                     const { expectedWei, actualWei } = await matchAmount(
+//                         agreement.amountDetails.amount,
+//                         obj.value,
+//                         obj.tokenDecimals
+//                     );
+//                     await updateDataWhenFundsIsDeposit(
+//                         expectedWei,
+//                         actualWei,
+//                         agreement.agreementId,
+//                         obj
+//                     );
+//                 }
 //             }
 
-//             console.log(obj, "obj====");
-//             const agreement = await Agreement.findOne({ status: "RequestedDeposit", payerWallet: obj.fromAddress })
-//             if (!agreement) return give_response(res, 404, false, "Agreement not found");
-//             console.log(agreement.agreementId, "agreement===");
+//             if (reqData.erc20Transfers[0].from == process.env.ADMIN_WALLET_ID) {
+//                 // for withdrawal
+//                 const obj = await getWithdrawalData(reqData);
+//                 console.log(obj, "obj====");
 
-//             // const withdrawalAgreement = await Agreement.findOne({ status: "RequestedWithdrawal", receiverWallet: obj.toAddress })
-//             // console.log(withdrawalAgreement.agreementId, "withdrawalAgreement===");
-//             // if(withdrawalAgreement){}
+//                 const withdrawalAgreement = await Agreement.findOne({
+//                     status: "RequestedWithdrawal",
+//                     $or: [
+//                         { receiverWallet: obj.fromAddress },
+//                         { payerWallet: obj.fromAddress },
+//                     ],
+//                     // receiverWallet: obj.fromAddress,
+//                     // payerWallet: obj.fromAddress,
+//                 });
 
-//             const expectedBNB = agreement.amountDetails.amount; // e.g. "5"
-//             // Convert to BigInt in 18 decimals (standard for ETH-compatible tokens)
-//             const expectedWei = parseUnits(expectedBNB, 18); // BigInt
-//             // Get actual value and token decimals from webhook
-//             const actualValue = obj.value; // e.g. "5000000"
-//             const actualDecimals = Number(obj.tokenDecimals); // e.g. 6
-//             const actualWei = BigInt(actualValue) * 10n ** BigInt(18 - actualDecimals);
+//                 if (withdrawalAgreement) {
+//                     console.log(
+//                         withdrawalAgreement.agreementId,
+//                         "withdrawalAgreement"
+//                     );
 
-//             // Compare
-//             if (expectedWei === actualWei) {
-//                 console.log("✅ Amount matches!");
-//                 await Agreement.findOneAndUpdate({ agreementId: agreement.agreementId }, { $set: { status: "EscrowFunded", dipositHash: obj.transactionHash } }, { new: true });
-//                 await TransectionHistory.create(obj);
-//                 await Notification.updateMany({ agreementId: agreement.agreementId, type: "Deposit Funds", read: true }, { $set: { importantNotificationIsRead: true } })
-//             } else {
-//                 console.log("amount mismatch");
+//                     const { expectedWei, actualWei } = await matchAmount(
+//                         withdrawalAgreement.amountDetails.amount,
+//                         obj.value,
+//                         obj.tokenDecimals
+//                     );
+//                     await updateDataWhenFundsIsWithdraw(
+//                         expectedWei,
+//                         actualWei,
+//                         withdrawalAgreement.agreementId,
+//                         obj
+//                     );
+//                 }
 //             }
 //         }
+
 //         return give_response(res, 200, true, "webhook called", {});
 //     } catch (error) {
-//         return give_response(res, 500, false, error.message);
+//         next(error);
 //     }
-// })
-
-// const expectedBNB = agreement.amountDetails.amount
-// const expectedWei = parseUnits(expectedBNB, 18); // returns bigint
-// const actualValueFromWebhook = obj.value; // from webhook
-// const actualWei = BigInt(actualValueFromWebhook);
+// });

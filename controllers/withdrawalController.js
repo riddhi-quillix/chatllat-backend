@@ -43,7 +43,7 @@ export const getSignature = asyncHandler(async (req, res, next) => {
 
         await Agreement.updateOne(
             { agreementId },
-            { $set: { status: "RequestedWithdrawal", withdrawalUser: address } }
+            { $set: { status: "RequestedWithdrawal", withdrawalUser: address, requestedWithdrawalDate: new Date() } }
         );
 
         const { signature, messageHash, signer } = signatureData;
