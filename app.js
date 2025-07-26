@@ -34,7 +34,25 @@ const PORT = process.env.PORT || 5000;
 await connectDB();
 
 const app = express();
-app.use(cors({ origin: "*" }));
+// app.use(cors({ origin: "*" }));
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://chatllatclient.ap-south-1.elasticbeanstalk.com",
+];
+
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            if (allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+        credentials: true,
+    })
+);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 app.use(bodyParser.json());
@@ -79,7 +97,10 @@ io.on("connection", async (socket) => {
         console.log(socket.id, "socket.id");
         global.users[data.userid] = socket.id;
 
-        io.to(socket.id).emit("connect_notification_user", "Notification User connected.");
+        io.to(socket.id).emit(
+            "connect_notification_user",
+            "Notification User connected."
+        );
     });
 
     // Handle user connection
@@ -97,7 +118,7 @@ io.on("connection", async (socket) => {
         try {
             const sender = data.sender;
             const receiver = data.receiver;
-            const agreementId = data.agreementId
+            const agreementId = data.agreementId;
 
             if (!sender || !receiver || !agreementId) {
                 return io
@@ -206,18 +227,23 @@ io.on("connection", async (socket) => {
 
     // ADD this typing handler in your io.on("connection") block:
     socket.on("typing", async (data) => {
-        console.log('👀 Typing event received:', data);
+        console.log("👀 Typing event received:", data);
         const { sender, receiver, isTyping } = data;
 
         // Send typing status to the receiver
         if (global.users[receiver]) {
-            console.log('📤 Forwarding typing to:', receiver, 'isTyping:', isTyping);
+            console.log(
+                "📤 Forwarding typing to:",
+                receiver,
+                "isTyping:",
+                isTyping
+            );
             socket.to(global.users[receiver]).emit("userTyping", {
                 userId: sender,
-                isTyping: isTyping
+                isTyping: isTyping,
             });
         } else {
-            console.log('❌ Receiver not found in global.users:', receiver);
+            console.log("❌ Receiver not found in global.users:", receiver);
         }
     });
 
@@ -303,8 +329,8 @@ io.on("connection", async (socket) => {
 //     });
 // });
 
-app.get('/', (req, res) => {
-    res.send(`backend deployed on port ${PORT}`)
+app.get("/", (req, res) => {
+    res.send(`backend deployed on port ${PORT}`);
 });
 
 server.listen(PORT, () => console.log("Server is running on PORT: " + PORT));
