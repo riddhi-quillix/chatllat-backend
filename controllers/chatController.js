@@ -91,6 +91,7 @@ export const getChatList = asyncHandler(async (req, res, next) => {
                     isGroup: "$lastMessage.isGroup",
                     groupName: "$lastMessage.groupName",
                     groupId: "$lastMessage.groupId",
+                    disputeId: "$lastMessage.disputeId",
                     createdAt: "$lastMessage.createdAt",
                     unreadCount: 1, // Include unread message count in the result
                 },
@@ -257,6 +258,7 @@ export const getChatMessages = asyncHandler(async (req, res, next) => {
                         read: 1,
                         isGroup: 1,
                         groupId: 1,
+                        disputeId: 1,
                         agreementId: 1,
                         groupName: 1,
                         groupMember: 1,

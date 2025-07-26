@@ -40,6 +40,10 @@ const chatSchema = new mongoose.Schema(
 			type: String,
 			default: null
 		},
+		disputeId: {
+			type: String,
+			default: null
+		},
 		groupName: {
 			type: String
 		},

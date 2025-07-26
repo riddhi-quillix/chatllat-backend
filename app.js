@@ -38,7 +38,9 @@ const app = express();
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
+    "http://localhost:5000",
     "http://chatllatclient.ap-south-1.elasticbeanstalk.com",
+    "http://chatllat-server.ap-south-1.elasticbeanstalk.com",
 ];
 
 app.use(
@@ -53,6 +55,7 @@ app.use(
         credentials: true,
     })
 );
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 app.use(bodyParser.json());
@@ -171,6 +174,7 @@ io.on("connection", async (socket) => {
             const groupChat = await GroupChat.findOne({ agreementId });
             const messagebody = {
                 groupId: groupChat.groupId,
+                disputeId: groupChat.disputeId,
                 agreementId,
                 sender: sender,
                 msg: msg || "",

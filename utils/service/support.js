@@ -293,6 +293,7 @@ export const createGroupChat = async (agreementId) => {
             
             groupChat = await GroupChat.create({
                 groupId:  `grp-${agreementId}`,
+                disputeId:  `sc-${dispute.disputeId}`,
                 agreementId,
                 groupName: `Dispute Resolve - ${agreement.projectTitle}`,
                 groupMember: [
@@ -304,6 +305,7 @@ export const createGroupChat = async (agreementId) => {
 
             const messagebody = {
                 groupId: groupChat.groupId,
+                disputeId: groupChat.disputeId,
                 agreementId,
                 sender: "",
                 msg: "Welcome to the chat",
