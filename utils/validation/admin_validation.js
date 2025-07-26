@@ -33,11 +33,22 @@ export const addMemberSchema = joi.object({
     fname: joi.string().required(),
     lname: joi.string().required(),
     role: joi.string().required().valid("SubAdmin", "Member"),
-    type: joi.string()
-    .valid("ManageMember", "AddMember", "All")
-    .when("role", {
-      is: "SubAdmin",
-      then: joi.required(),
-      otherwise: joi.forbidden(),
-    }),
+    type: joi
+        .array()
+        .items(
+            joi
+                .string()
+                .valid(
+                    "ManageMember",
+                    "AddMember",
+                    "All",
+                    "ViewReports",
+                    "ManageDisputes"
+                )
+        )
+        .when("role", {
+            is: "SubAdmin",
+            then: joi.required(),
+            otherwise: joi.forbidden(),
+        }),
 });

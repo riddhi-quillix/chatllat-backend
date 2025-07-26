@@ -33,8 +33,8 @@ const adminSchema = new mongoose.Schema(
             enum: ["SuperAdmin", "SubAdmin"]
         },
         type: {
-            type: String,
-            enum: ["ManageMember", "AddMember", "All"]
+            type: [String],
+            enum: ["ManageMember", "AddMember", "All", "ViewReports", "ManageDisputes"]
         }
     },
     { timestamps: true }

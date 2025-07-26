@@ -271,7 +271,7 @@ export const addMember = asyncHandler(async (req, res, next) => {
         const { email, password, fname, lname, role, type } = validatedData;
 
         const admin = await Admin.findOne({ _id: userId });
-        if (admin.role === "SubAdmin" && admin.type === "ManageMember")
+        if (admin.role === "SubAdmin" && admin.type.includes("ManageMember"))
             return give_response(
                 res,
                 400,
