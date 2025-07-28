@@ -4,6 +4,31 @@ import asyncHandler from "../helper/async.js";
 import Agreement from "../models/Agreement.js";
 import { signWithdrawal } from "../utils/service/withdrawal.js";
 import { getSignatureSchema } from "../utils/validation/withdrawal_validation.js";
+import {
+    SecretsManagerClient,
+    GetSecretValueCommand,
+} from "@aws-sdk/client-secrets-manager";
+
+async function getSecret() {
+    const secret_name = process.env.SECRET_NAME;
+
+    const client = new SecretsManagerClient({
+        region: process.env.AWS_REGION,
+    });
+
+    try {
+        const response = await client.send(
+            new GetSecretValueCommand({
+                SecretId: secret_name,
+                VersionStage: "AWSCURRENT",
+            })
+        );
+        
+        return JSON.parse(response.SecretString);
+    } catch (error) {
+        throw error;
+    }
+}
 
 export const getSignature = asyncHandler(async (req, res, next) => {
     try {
@@ -13,7 +38,7 @@ export const getSignature = asyncHandler(async (req, res, next) => {
 
         const agreement = await Agreement.findOne({
             agreementId,
-            status: { $in: ["FundsReleased", "ReturnFunds"] },
+            status: { $in: ["FundsReleased", "ReturnFunds", "RequestedWithdrawal"] },
         });
         if (!agreement)
             return give_response(res, 404, false, "Agreement not found");
@@ -33,7 +58,8 @@ export const getSignature = asyncHandler(async (req, res, next) => {
             return give_response(res, 400, false, "Invalid address format");
         }
 
-        const adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
+        const key = await getSecret()
+        const adminPrivateKey = key.ADMIN_PRIVATE_KEY;
         // Generate signature
         const signatureData = await signWithdrawal(
             address,
@@ -43,7 +69,13 @@ export const getSignature = asyncHandler(async (req, res, next) => {
 
         await Agreement.updateOne(
             { agreementId },
-            { $set: { status: "RequestedWithdrawal", withdrawalUser: address, requestedWithdrawalDate: new Date() } }
+            {
+                $set: {
+                    status: "RequestedWithdrawal",
+                    withdrawalUser: address,
+                    requestedWithdrawalDate: new Date(),
+                },
+            }
         );
 
         const { signature, messageHash, signer } = signatureData;
