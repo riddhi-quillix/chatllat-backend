@@ -255,6 +255,7 @@ export const getChatMessages = asyncHandler(async (req, res, next) => {
                         msg: 1,
                         image: 1,
                         document: 1,
+                        sender: 1,
                         read: 1,
                         isGroup: 1,
                         groupId: 1,
