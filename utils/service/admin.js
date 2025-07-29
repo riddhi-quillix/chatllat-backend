@@ -6,59 +6,79 @@ import Admin from "../../models/Admin.js";
 import SupportTeam from "../../models/SupportTeam.js";
 import supportUserCredentialMail from "../email_template/supportUserCredential.js";
 import { sendEmail } from "./sendEmail.js";
+import Resolution from "../../models/Resolution.js";
 
-export const addHashLink = async (validatedData, chain) => {
+export const addHashLink = async (validatedData, agreement) => {
     try {
         const {
             payerHash,
             receiverHash,
             payerEvidence,
             receiverEvidence,
-            agreementId,
         } = validatedData;
 
-        let payerhash
-        let receiverhash
+        let payerhash;
+        let receiverhash;
+        const chain = agreement.amountDetails.chain;
 
         switch (chain) {
-            case 'bsc':
-                payerhash = `https://bscscan.com/tx/${payerHash}`
-                receiverhash = `https://bscscan.com/tx/${receiverHash}`
-            break;
-            case 'polygon':
-                payerhash = `https://polygonscan.com/tx/${payerHash}`
-                receiverhash = `https://polygonscan.com/tx/${receiverHash}`
-            break;
-            case 'avalanche':
-                payerhash = `https://snowtrace.io/tx/${payerHash}`
-                receiverhash = `https://snowtrace.io/tx/${receiverHash}`
-            break;
-            case 'arbitrum':
-                payerhash = `https://arbiscan.io/tx/${payerHash}`
-                receiverhash = `https://arbiscan.io/tx/${receiverHash}`
-            break;
-            case 'clat':
-                payerhash = `https://bscscan.com/tx/${payerHash}`
-                receiverhash = `https://bscscan.com/tx/${receiverHash}`
-            break;
+            case "bsc":
+                payerhash = `https://bscscan.com/tx/${payerHash}`;
+                receiverhash = `https://bscscan.com/tx/${receiverHash}`;
+                break;
+            case "polygon":
+                payerhash = `https://polygonscan.com/tx/${payerHash}`;
+                receiverhash = `https://polygonscan.com/tx/${receiverHash}`;
+                break;
+            case "avalanche":
+                payerhash = `https://snowtrace.io/tx/${payerHash}`;
+                receiverhash = `https://snowtrace.io/tx/${receiverHash}`;
+                break;
+            case "arbitrum":
+                payerhash = `https://arbiscan.io/tx/${payerHash}`;
+                receiverhash = `https://arbiscan.io/tx/${receiverHash}`;
+                break;
+            case "clat":
+                payerhash = `https://bscscan.com/tx/${payerHash}`;
+                receiverhash = `https://bscscan.com/tx/${receiverHash}`;
+                break;
         }
 
         const updatedAgreement = await Agreement.findOneAndUpdate(
-            { agreementId },
+            { agreementId: agreement.agreementId },
             {
                 $set: {
                     "hashLink.payer.hash": payerhash,
                     "hashLink.receiver.hash": receiverhash,
                     "hashLink.receiver.image": receiverEvidence,
                     "hashLink.payer.image": payerEvidence,
-                    "timeline.disputeResolved": new Date()
+                    "timeline.disputeResolved": new Date(),
                 },
             },
             { new: true }
         ).select("agreementId hashLink");
 
-        await Dispute.updateOne({agreementId}, {$set: {assignStatus: "Completed", "date.completed": new Date()}})
-        
+        const dispute = await Dispute.findOneAndUpdate(
+            { agreementId: agreement.agreementId },
+            {
+                $set: {
+                    assignStatus: "Completed",
+                    "date.completed": new Date(),
+                },
+            },
+            {new: true}
+        );
+
+        await Resolution.create({
+            payerHash: payerhash,
+            receiverHash: receiverhash,
+            payerWallet: agreement.payerWallet,
+            receiverWallet: agreement.receiverWallet,
+            payerAmount: agreement.split.payerAmount,
+            receiverAmount: agreement.split.receiverAmount,
+            agentName: dispute.AssignedAgent.fname + " " + dispute.AssignedAgent.lname
+        });
+
         return updatedAgreement;
     } catch (error) {
         throw error;

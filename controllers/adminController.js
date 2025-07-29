@@ -156,8 +156,7 @@ export const addHash = asyncHandler(async (req, res, next) => {
         if (!agreement)
             return give_response(res, 404, false, "Agreement not found");
 
-        const chain = agreement.amountDetails.chain;
-        const updatedAgreement = await addHashLink(validatedData, chain);
+        const updatedAgreement = await addHashLink(validatedData, agreement);
 
         return give_response(
             res,
