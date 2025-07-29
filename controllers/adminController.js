@@ -24,6 +24,7 @@ import { allTicketSchema } from "../utils/validation/supportTeam_validation.js";
 import supportUserCredentialMail from "../utils/email_template/supportUserCredential.js";
 import { sendEmail } from "../utils/service/sendEmail.js";
 import { generatesupportId } from "../utils/service/agreement.js";
+import PlatformFee from "../models/PlatformFee.js";
 
 export const createAdmin = asyncHandler(async (req, res, next) => {
     try {
@@ -93,7 +94,13 @@ export const reAssignedDispute = asyncHandler(async (req, res, next) => {
 
         const dispute = await Dispute.findOneAndUpdate(
             { disputeId },
-            { $set: { assignStatus: "ReAssigned", status: "InProcess", reAssignedReason } },
+            {
+                $set: {
+                    assignStatus: "ReAssigned",
+                    status: "InProcess",
+                    reAssignedReason,
+                },
+            },
             { new: true }
         );
         // await Agreement.updateOne({agreementId: dispute.agreementId}, {$set: {split: {}}})
@@ -149,7 +156,7 @@ export const addHash = asyncHandler(async (req, res, next) => {
         if (!agreement)
             return give_response(res, 404, false, "Agreement not found");
 
-        const chain = agreement.amountDetails.chain
+        const chain = agreement.amountDetails.chain;
         const updatedAgreement = await addHashLink(validatedData, chain);
 
         return give_response(
@@ -406,58 +413,62 @@ export const getAllMember = asyncHandler(async (req, res, next) => {
         const { search, sort } = req.query;
         const subAdminQuery = search
             ? [
-                {
-                    $match: {
-                        role: "SubAdmin",
-                    }
-                },
-                {
-                    $addFields: {
-                        fullName: { $concat: ["$fname", " ", "$lname"] }
-                    }
-                },
-                {
-                    $match: {
-                        fullName: { $regex: search, $options: "i" }
-                    }
-                }
-            ]
-            : [
-                { $match: { role: "SubAdmin" } }
-            ];
+                  {
+                      $match: {
+                          role: "SubAdmin",
+                      },
+                  },
+                  {
+                      $addFields: {
+                          fullName: { $concat: ["$fname", " ", "$lname"] },
+                      },
+                  },
+                  {
+                      $match: {
+                          fullName: { $regex: search, $options: "i" },
+                      },
+                  },
+              ]
+            : [{ $match: { role: "SubAdmin" } }];
 
         const subAdmin = await Admin.aggregate(subAdminQuery);
 
         const supportQuery = search
             ? [
-                {
-                    $addFields: {
-                        fullName: { $concat: ["$fname", " ", "$lname"] }
-                    }
-                },
-                {
-                    $match: {
-                        fullName: { $regex: search, $options: "i" }
-                    }
-                }
-            ]
+                  {
+                      $addFields: {
+                          fullName: { $concat: ["$fname", " ", "$lname"] },
+                      },
+                  },
+                  {
+                      $match: {
+                          fullName: { $regex: search, $options: "i" },
+                      },
+                  },
+              ]
             : [];
 
         const support = await SupportTeam.aggregate([
             ...supportQuery,
-            { $addFields: { role: "Member" } }
+            { $addFields: { role: "Member" } },
         ]);
 
         const allUsers = [...subAdmin, ...support];
 
         let sortedUsers;
         if (sort === "ascending") {
-            sortedUsers = allUsers.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            sortedUsers = allUsers.sort(
+                (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+            );
         } else {
-            sortedUsers = allUsers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            sortedUsers = allUsers.sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
         }
 
-        give_response(res, 200, true, "All members retrieved successfully!", { users: sortedUsers });
+        give_response(res, 200, true, "All members retrieved successfully!", {
+            users: sortedUsers,
+        });
     } catch (error) {
         next(error);
     }
@@ -514,11 +525,43 @@ export const updateMember = asyncHandler(async (req, res, next) => {
     }
 });
 
-export const getAllAgentName = asyncHandler(async(req, res, next) => {
+export const getAllAgentName = asyncHandler(async (req, res, next) => {
     try {
-        const agent = await SupportTeam.find({}).select("fname lname -_id")
-        give_response(res, 200, true, "Agent name get successfully", agent)
+        const agent = await SupportTeam.find({}).select("fname lname -_id");
+        give_response(res, 200, true, "Agent name get successfully", agent);
     } catch (error) {
         next(error);
     }
-})
+});
+
+export const updatePlatformFee = asyncHandler(async (req, res, next) => {
+    try {
+        const { platformFeeId, platformFeeInPercent } = req.body;
+
+        const platformfee = await PlatformFee.findOneAndUpdate(
+            { _id: platformFeeId },
+            { $set: { platformFeeInPercent } },
+            { new: true, upsert: true, }
+        );
+        
+        give_response(res, 200, true, "Platform fee updated successfully", {
+            platformfee,
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+export const getPlatformFee = asyncHandler(async (req, res, next) => {
+    try {
+        const { platformFeeId } = req.query;
+
+        const platformfee = await PlatformFee.findById(platformFeeId);
+        
+        give_response(res, 200, true, "Platform fee get successfully", {
+            platformfee,
+        });
+    } catch (error) {
+        next(error);
+    }
+});

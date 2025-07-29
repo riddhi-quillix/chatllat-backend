@@ -8,10 +8,12 @@ import {
     getAllMember,
     getAllTickets,
     getPaymentDetails,
+    getPlatformFee,
     login,
     reAssignedDispute,
     removeMember,
     updateMember,
+    updatePlatformFee,
 } from "../controllers/adminController.js";
 import {adminAuth} from "../middleware/auth.js"
 const router = express.Router();
@@ -28,5 +30,7 @@ router.delete("/delete/member", adminAuth, removeMember);
 router.get("/all/member", adminAuth, getAllMember); 
 router.patch("/update/member", adminAuth, updateMember); 
 router.get("/all/agent/name", adminAuth, getAllAgentName); 
+router.patch("/update/platform/fee", adminAuth, updatePlatformFee); 
+router.get("/platform/fee", adminAuth, getPlatformFee); 
 
 export default router;
