@@ -371,12 +371,12 @@ export const getWithdrawalAgreement = asyncHandler(async (req, res, next) => {
         const agreements = await Agreement.aggregate([
             {
                 $match: {
-                        $or: [
-                            {status: "FundsReleased", receiverWallet: connectedWalletId},
-                            {status: "ReturnFunds", payerWallet: connectedWalletId},
-                            {status: "Completed", withdrawalUser: connectedWalletId},
-                        ],
-                    },
+                    $or: [
+                        { status: "FundsReleased", receiverWallet: connectedWalletId },
+                        { status: "ReturnFunds", payerWallet: connectedWalletId },
+                        { status: "Completed", withdrawalUser: connectedWalletId },
+                    ],
+                },
             },
             {
                 $project: {
@@ -541,14 +541,20 @@ export const cancelAgreement = asyncHandler(async (req, res, next) => {
                 ? "ReturnFunds"
                 : "Rejected";
 
-        // const status =
-        //     cancelledBy === "Payer" || agreement.status !== "EscrowFunded"
-        //         ? "Rejected"
-        //         : "ReturnFunds";
+        // ✅ FIX: Prepare update object with timeline
+        const updateData = {
+            status,
+            cancellationReason
+        };
+
+        // ✅ NEW: Set timeline.returnFunds when status is ReturnFunds
+        if (status === "ReturnFunds") {
+            updateData["timeline.returnFunds"] = new Date();
+        }
 
         await Agreement.updateOne(
             { agreementId },
-            { $set: { status, cancellationReason } }
+            { $set: updateData }  // ✅ Use updateData instead of direct object
         );
 
         return give_response(

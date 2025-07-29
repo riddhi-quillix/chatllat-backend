@@ -101,7 +101,7 @@ const agreementSchema = new mongoose.Schema(
         },
         amountDetails: {
             amount: { type: String, required: true },
-            withdrawalAmount: {type: String, required: true},
+            withdrawalAmount: { type: String, required: true },
             chain: { type: String, default: "Ethereum" },
             image: { type: String, default: "https://chatllat.s3.ap-south-1.amazonaws.com/142521649532.png" }
         },
@@ -139,6 +139,10 @@ const agreementSchema = new mongoose.Schema(
                 default: null
             },
             escrowFunded: {
+                type: Date,
+                default: null
+            },
+            returnFunds: {
                 type: Date,
                 default: null
             },
