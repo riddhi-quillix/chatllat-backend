@@ -2,6 +2,7 @@ import Agreement from "../../models/Agreement.js";
 import Chat from "../../models/Chat.js";
 import Dispute from "../../models/Dispute.js";
 import GroupChat from "../../models/GroupChat.js";
+import PlatformFee from "../../models/PlatformFee.js";
 
 export const getMyTickets = async (validatedData) => {
     const {
@@ -243,11 +244,16 @@ export const getMyTicketDetails = async (ticketId) => {
 export const splitAmount = async (validatedData, agreement) => {
     const { payerAmountPercent, receiverAmountPercent, decision } =
         validatedData;
+    
+    const charges = await PlatformFee.find({}).sort({_id: -1}).limit(1)
+    const disputeChargeInPercent = charges[0].disputeChargeInPercent
+    
+    const totalAmount = agreement.amountDetails.withdrawalAmount;
+    const disputeCharge = (totalAmount * disputeChargeInPercent) / 100;
+    const amountAfterCharge = totalAmount - disputeCharge;
 
-    const totalAmount = agreement.amountDetails.amount;
-
-    const payerAmount = (totalAmount * payerAmountPercent) / 100;
-    const receiverAmount = (totalAmount * receiverAmountPercent) / 100;
+    const payerAmount = (amountAfterCharge * payerAmountPercent) / 100;
+    const receiverAmount = (amountAfterCharge * receiverAmountPercent) / 100;
 
     const split = {
         payerAmount,

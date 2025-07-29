@@ -50,7 +50,7 @@ export const getSignature = asyncHandler(async (req, res, next) => {
             agreement.amountDetails.chain == "arbitrum"
                 ? 6
                 : 18;
-        const amount = agreement.amountDetails.WithdrawalAmount;
+        const amount = agreement.amountDetails.withdrawalAmount;
         const WithdrawalAmount = ethers.parseUnits(amount, decimal);
 
         // Validate address format

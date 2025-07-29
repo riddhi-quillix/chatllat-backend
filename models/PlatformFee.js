@@ -4,6 +4,9 @@ const PlatformFeeSchema = new mongoose.Schema(
     {
         platformFeeInPercent: {
             type: Number
+        },
+        disputeChargeInPercent: {
+            type: Number
         }
     },
     { timestamps: true, versionKey: false }

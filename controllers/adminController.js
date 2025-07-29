@@ -536,11 +536,11 @@ export const getAllAgentName = asyncHandler(async (req, res, next) => {
 
 export const updatePlatformFee = asyncHandler(async (req, res, next) => {
     try {
-        const { platformFeeId, platformFeeInPercent } = req.body;
+        const { platformFeeId } = req.body;
 
         const platformfee = await PlatformFee.findOneAndUpdate(
             { _id: platformFeeId },
-            { $set: { platformFeeInPercent } },
+            { $set: req.body },
             { new: true, upsert: true, }
         );
         

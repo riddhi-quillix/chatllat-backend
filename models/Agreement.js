@@ -101,19 +101,19 @@ const agreementSchema = new mongoose.Schema(
         },
         amountDetails: {
             amount: { type: String, required: true },
-            WithdrawalAmount: {type: String, required: true},
+            withdrawalAmount: {type: String, required: true},
             chain: { type: String, default: "Ethereum" },
             image: { type: String, default: "https://chatllat.s3.ap-south-1.amazonaws.com/142521649532.png" }
+        },
+        withdrawal: {
+            receiverWithdrawn: { type: Boolean, default: false },
+            payerWithdrawn: { type: Boolean, default: false },
         },
         split: {
             receiverAmount: { type: Number, default: 0 },
             payerAmount: { type: Number, default: 0 },
             payerPercentage: { type: Number, default: 0 },
             receiverPercentage: { type: Number, default: 0 },
-        },
-        withdrawal: {
-            receiverWithdrawn: { type: Boolean, default: false },
-            payerWithdrawn: { type: Boolean, default: false },
         },
         hashLink: {
             payer: {

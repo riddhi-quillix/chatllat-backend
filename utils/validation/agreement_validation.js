@@ -17,7 +17,7 @@ export const createAgreementSchema = joi.object({
     projectDescription: joi.string().min(10),
     amountDetails: joi.object().required().keys({
         amount: joi.string().required(),
-        WithdrawalAmount: joi.string().required(),
+        withdrawalAmount: joi.string().required(),
         chain: joi.string().default("ethereum"),
         image: joi.string().required(),
     }),
@@ -61,7 +61,7 @@ export const updateAgreementSchema = joi.object({
         amount: joi.string().optional(),
         chain: joi.string().optional(),
         image: joi.string().optional(),
-        WithdrawalAmount: joi.string().optional(),
+        withdrawalAmount: joi.string().optional(),
     }),
 
     projectTitle: joi.string().optional(),
