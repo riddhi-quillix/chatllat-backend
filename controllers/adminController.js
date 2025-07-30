@@ -23,7 +23,7 @@ import { allTickets } from "../utils/service/support.js";
 import { allTicketSchema } from "../utils/validation/supportTeam_validation.js";
 import supportUserCredentialMail from "../utils/email_template/supportUserCredential.js";
 import { sendEmail } from "../utils/service/sendEmail.js";
-import { generatesupportId } from "../utils/service/agreement.js";
+import { generateadminId } from "../utils/service/agreement.js";
 import PlatformFee from "../models/PlatformFee.js";
 
 export const createAdmin = asyncHandler(async (req, res, next) => {
@@ -35,14 +35,13 @@ export const createAdmin = asyncHandler(async (req, res, next) => {
             return give_response(res, 400, false, "Admin already exist");
 
         const hashPass = await bcryptjs.hash(password, 8);
-        const randomId = await generatesupportId();
-        const id = `adm${randomId}`;
-
+        const randomId = generateadminId();
+        
         const admin = await Admin.create({
             email,
             password: hashPass,
             role: "SuperAdmin",
-            id,
+            id: randomId,
         });
 
         delete admin._doc.password;

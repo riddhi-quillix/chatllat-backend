@@ -265,6 +265,8 @@ export const getChatMessages = asyncHandler(async (req, res, next) => {
                         groupMember: 1,
                         groupMsgReadBy: 1,
                         createdAt: 1,
+                        payerWallet: 1,
+                        receiverWallet: 1
                     },
                 },
             ]);

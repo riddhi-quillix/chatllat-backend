@@ -54,6 +54,14 @@ const chatSchema = new mongoose.Schema(
 		groupMsgReadBy: {
 			type: [String],
 			default: []
+		},
+		payerWallet: {
+			type: String,
+			default: null
+		},
+		receiverWallet: {
+			type: String,
+			default: null
 		}
 	},
 	{ timestamps: true, versionKey: false }

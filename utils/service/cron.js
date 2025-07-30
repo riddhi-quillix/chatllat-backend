@@ -84,7 +84,7 @@ const sendFundDepositNotification = async () => {
                 if (!dispute) {
                     await Dispute.create({
                         agreementId: agreement.agreementId,
-                        disputeId: await generateDisputeId(),
+                        disputeId: generateDisputeId(),
                         status: "DisputeRaised",
                         payerWalletAddress: agreement.payerWallet,
                         receiverWalletAddress: agreement.receiverWallet,

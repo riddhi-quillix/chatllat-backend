@@ -1,7 +1,7 @@
 import Agreement from "../../models/Agreement.js";
 import Dispute from "../../models/Dispute.js";
 import bcryptjs from "bcryptjs";
-import { generatesupportId } from "./agreement.js";
+import { generatesupportId, generateadminId } from "./agreement.js";
 import Admin from "../../models/Admin.js";
 import SupportTeam from "../../models/SupportTeam.js";
 import supportUserCredentialMail from "../email_template/supportUserCredential.js";
@@ -146,8 +146,9 @@ export const createMember = async (validatedData) => {
         const { email, password, fname, lname, role, type } = validatedData;
 
         const hashPass = await bcryptjs.hash(password, 8);
-        const prefix = role === "Member" ? "stm" : "adm";
-        const id = `${prefix}${await generatesupportId()}`;
+        // const prefix = role === "Member" ? "stm" : "adm";
+        // const id = `${prefix}${ generatesupportId()}`;
+        const id = role === "Member" ? generatesupportId() : generateadminId();
         const model = role === "Member" ? SupportTeam : Admin;
 
         const newUserData = {

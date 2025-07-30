@@ -151,21 +151,22 @@ io.on("connection", async (socket) => {
         try {
             const { sender, msg, image, document, agreementId } = data;
 
-            console.log(data, "sendGroupMessage===");
-
             if (!sender || !agreementId) {
                 return io
-                    .to(socket.id)
-                    .emit(
-                        "sendGroupMessageError",
-                        "Group ID, agreementId and sender are required."
-                    );
+                .to(socket.id)
+                .emit(
+                    "sendGroupMessageError",
+                    "Group ID, agreementId and sender are required."
+                );
             }
-
+            
+            const groupChat = await GroupChat.findOne({ agreementId });
+            data.payerWallet = groupChat.payerWallet
+            data.receiverWallet = groupChat.receiverWallet
+            
             // Emit the message to all users in the group (using the agreementId as the room)
             socket.to(agreementId).emit("receiveGroupMessage", data);
 
-            const groupChat = await GroupChat.findOne({ agreementId });
             const messagebody = {
                 groupId: groupChat.groupId,
                 disputeId: groupChat.disputeId,
@@ -177,6 +178,8 @@ io.on("connection", async (socket) => {
                 isGroup: true,
                 groupName: groupChat.groupName,
                 groupMember: groupChat.groupMember,
+                payerWallet: groupChat.payerWallet,
+                receiverWallet: groupChat.receiverWallet,
             };
 
             // Save the group message to the database

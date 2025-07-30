@@ -17,42 +17,81 @@ export const generateAgreementId = async () => {
 };
 
 // generate DisputeId
-export const generateDisputeId = async () => {
+export const generateDisputeId = () => {
     try {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        const length = 6; // ID length
-
-        // Generate a random 6-character ID
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * characters.length);
-            result += characters[randomIndex];
-        }
-
-        return result;
+        const bytes = crypto.randomBytes(6);
+        const number = BigInt("0x" + bytes.toString("hex"))
+            .toString()
+            .slice(0, 6);
+        const id = number.padStart(6, "0");
+        return `DSP${id}`
     } catch (error) {
         throw error;
     }
 };
+
+export const generatesupportId = () => {
+    try {
+        const bytes = crypto.randomBytes(6);
+        const number = BigInt("0x" + bytes.toString("hex"))
+            .toString()
+            .slice(0, 6);
+        const id = number.padStart(6, "0");
+        return `SP${id}`
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const generateadminId = () => {
+    try {
+        const bytes = crypto.randomBytes(6);
+        const number = BigInt("0x" + bytes.toString("hex"))
+            .toString()
+            .slice(0, 6);
+        const id = number.padStart(6, "0");
+        return `SA${id}`
+    } catch (error) {
+        throw error;
+    }
+};
+
+// export const generateDisputeId = async () => {
+//     try {
+//         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+//         let result = '';
+//         const length = 6; // ID length
+
+//         // Generate a random 6-character ID
+//         for (let i = 0; i < length; i++) {
+//             const randomIndex = Math.floor(Math.random() * characters.length);
+//             result += characters[randomIndex];
+//         }
+
+//         return result;
+//     } catch (error) {
+//         throw error;
+//     }
+// };
 
 // create support team user id
-export const generatesupportId = async () => {
-    try {
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        const length = 4; // ID length
+// export const generatesupportId = async () => {
+//     try {
+//         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+//         let result = '';
+//         const length = 4; // ID length
 
-        // Generate a random 6-character ID
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * characters.length);
-            result += characters[randomIndex];
-        }
+//         // Generate a random 6-character ID
+//         for (let i = 0; i < length; i++) {
+//             const randomIndex = Math.floor(Math.random() * characters.length);
+//             result += characters[randomIndex];
+//         }
 
-        return result;
-    } catch (error) {
-        throw error;
-    }
-};
+//         return result;
+//     } catch (error) {
+//         throw error;
+//     }
+// };
 
 export const otp_genrator = (min, max) => {
     const otp = Math.floor(Math.random() * (max - min) + min);
@@ -73,10 +112,19 @@ export const walletAddressAdd = async (validatedData, agreement) => {
         const { walletAddress, agreementId, status, cancellationReason } =
             validatedData;
 
-        let query =
-            agreement.payerWallet === ""
-                ? { payerWallet: walletAddress }
-                : { receiverWallet: walletAddress };
+            // let query
+            // if(agreement.payerWallet == "" || agreement.receiverWallet == ""){
+            //     query =
+            //         agreement.payerWallet === ""
+            //             ? { payerWallet: walletAddress }
+            //             : { receiverWallet: walletAddress };
+            // }
+
+            const query = agreement.payerWallet === ""
+            ? { payerWallet: walletAddress }
+            : agreement.receiverWallet === ""
+            ? { receiverWallet: walletAddress }
+            : {};
 
         const updateData = {
             ...query,

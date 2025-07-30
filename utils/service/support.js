@@ -299,7 +299,7 @@ export const createGroupChat = async (agreementId) => {
             
             groupChat = await GroupChat.create({
                 groupId:  `grp-${agreementId}`,
-                disputeId:  `sc-${dispute.disputeId}`,
+                disputeId:  dispute.disputeId,
                 agreementId,
                 groupName: `Dispute Resolve - ${agreement.projectTitle}`,
                 groupMember: [
@@ -307,6 +307,8 @@ export const createGroupChat = async (agreementId) => {
                     dispute.receiverWalletAddress,
                     dispute.AssignedAgent.agentId,
                 ],
+                payerWallet: agreement.payerWallet,
+                receiverWallet: agreement.receiverWallet,
             });
 
             const messagebody = {
@@ -320,6 +322,8 @@ export const createGroupChat = async (agreementId) => {
                 isGroup: true,
                 groupName: groupChat.groupName,
                 groupMember: groupChat.groupMember,
+                payerWallet: groupChat.payerWallet,
+                receiverWallet: groupChat.receiverWallet,
             };
             
             // Save the group message to the database

@@ -29,7 +29,7 @@ export const disputeAdd = async (validatedData, agreement) => {
 
         const dispute = await Dispute.create({
             agreementId,
-            disputeId: await generateDisputeId(),
+            disputeId: generateDisputeId(),
             status: "DisputeRaised",
             payerWalletAddress: agreement.payerWallet,
             receiverWalletAddress: agreement.receiverWallet,
