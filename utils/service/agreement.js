@@ -112,14 +112,6 @@ export const walletAddressAdd = async (validatedData, agreement) => {
         const { walletAddress, agreementId, status, cancellationReason } =
             validatedData;
 
-            // let query
-            // if(agreement.payerWallet == "" || agreement.receiverWallet == ""){
-            //     query =
-            //         agreement.payerWallet === ""
-            //             ? { payerWallet: walletAddress }
-            //             : { receiverWallet: walletAddress };
-            // }
-
             const query = agreement.payerWallet === ""
             ? { payerWallet: walletAddress }
             : agreement.receiverWallet === ""
