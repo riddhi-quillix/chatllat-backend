@@ -208,7 +208,7 @@ export const transectionConfirmation = asyncHandler(async (req, res, next) => {
                         "withdrawalAgreement"
                     );
                     const { expectedWei, actualWei } = await matchAmount(
-                        withdrawalAgreement.amountDetails.amount,
+                        withdrawalAgreement.amountDetails.withdrawalAmount,
                         obj.value,
                         obj.tokenDecimals
                     );

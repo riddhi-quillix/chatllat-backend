@@ -436,6 +436,13 @@ export const takeATicket = asyncHandler(async (req, res, next) => {
         const agentId = req.userId;
         const agent = await SupportTeam.findOne({id: agentId});
 
+        const dispute = await Dispute.findOne({disputeId})
+        if(!dispute) 
+            return give_response(res, 404, false, "Dispute not exist");
+        
+        if(dispute.AssignedAgent.agentId != "")
+            return give_response(res, 400, false, "This dispute already assigned");
+
         await SupportTeam.updateOne(
             { id: agent.id },
             {
@@ -449,7 +456,7 @@ export const takeATicket = asyncHandler(async (req, res, next) => {
             lname: agent.lname,
             email: agent.email,
         };
-        const dispute = await Dispute.findOneAndUpdate(
+        await Dispute.updateOne(
             { disputeId },
             { $set: { AssignedAgent, assignStatus: "OnWork", status: "InProcess" } }
         );
