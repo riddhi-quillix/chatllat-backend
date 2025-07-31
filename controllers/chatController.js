@@ -223,6 +223,7 @@ export const getChatMessages = asyncHandler(async (req, res, next) => {
                 {
                     isGroup: true,
                     groupMsgReadBy: { $ne: sender },
+                    agreementId,
                 },
                 {
                     $push: { groupMsgReadBy: sender }, // Push userId to the readBy array
