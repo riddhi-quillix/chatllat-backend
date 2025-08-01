@@ -1,5 +1,5 @@
 import express from "express";
-import { addPersonalDetails, addWalletAddress, createNewAgreement, getAgreementById, getAllAgreement, updateAgreementDetails, requestDeposit, setWorkSubmittedStatus, setFundsReleasedStatus, getDisputedStatusAgreement, getWithdrawalAgreement, cancelAgreement, updateStatusWhenDepositFailed } from "../controllers/agreementController.js";
+import { addPersonalDetails, addWalletAddress, createNewAgreement, getAgreementById, getAllAgreement, updateAgreementDetails, requestDeposit, setWorkSubmittedStatus, setFundsReleasedStatus, getDisputedStatusAgreement, getWithdrawalAgreement, cancelAgreement, updateStatusWhenDepositFailed, updateStatusWhenWithdrawalFailed } from "../controllers/agreementController.js";
 import { getPlatformFee } from "../controllers/adminController.js";
 
 const router = express.Router();
@@ -19,5 +19,6 @@ router.patch("/fund/released",  setFundsReleasedStatus);
 router.patch("/cancel",  cancelAgreement);
 router.get("/platform/fee", getPlatformFee); 
 router.patch("/deposit/failed/status", updateStatusWhenDepositFailed); 
+router.patch("/withdraw/failed/status", updateStatusWhenWithdrawalFailed); 
 
 export default router;

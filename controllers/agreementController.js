@@ -584,3 +584,18 @@ export const updateStatusWhenDepositFailed = asyncHandler(async (req, res, next)
         next(error);
     }
 })
+
+export const updateStatusWhenWithdrawalFailed = asyncHandler(async (req, res, next) => {
+    try {
+        const {agreementId} = req.body
+
+        const agreement = await Agreement.findOne({ agreementId });
+        if (!agreement)
+            return give_response(res, 404, false, "Agreement not found");
+
+        await Agreement.updateOne({agreementId}, {$set: {status: "FundsReleased"}})
+        return give_response(res, 200, true, "Status updated successfully", {})
+    } catch (error) {
+        next(error);
+    }
+})

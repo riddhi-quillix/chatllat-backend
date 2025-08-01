@@ -180,6 +180,7 @@ io.on("connection", async (socket) => {
                 groupMember: groupChat.groupMember,
                 payerWallet: groupChat.payerWallet,
                 receiverWallet: groupChat.receiverWallet,
+                agentId: groupChat.agentId,
             };
 
             // Save the group message to the database

@@ -62,6 +62,10 @@ const chatSchema = new mongoose.Schema(
 		receiverWallet: {
 			type: String,
 			default: null
+		},
+		agentId: {
+			type: String,
+			default: null
 		}
 	},
 	{ timestamps: true, versionKey: false }

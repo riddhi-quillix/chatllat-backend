@@ -3,7 +3,6 @@ import { getChatList, getChatMessages, getPersonalChatMessages } from "../contro
 
 const router = express.Router();
 
-// router.post("/create/group_chat", createGroupChat);
 router.get("/all/chatList", getChatList);
 router.get("/personalChat/allMsg", getPersonalChatMessages);
 router.get("/allMsg", getChatMessages);

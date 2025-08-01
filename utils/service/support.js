@@ -287,7 +287,7 @@ export const splitAmount = async (validatedData, agreement) => {
     return updatedAgreement;
 };
 
-export const createGroupChat = async (agreementId) => {
+export const createGroupChat = async (agreementId, agentId) => {
       try {
         // Check if group chat already exists for the agreement
         const existingGroupChat = await GroupChat.findOne({ agreementId, isGroup: true });
@@ -309,6 +309,7 @@ export const createGroupChat = async (agreementId) => {
                 ],
                 payerWallet: agreement.payerWallet,
                 receiverWallet: agreement.receiverWallet,
+                agentId
             });
 
             const messagebody = {
@@ -324,6 +325,7 @@ export const createGroupChat = async (agreementId) => {
                 groupMember: groupChat.groupMember,
                 payerWallet: groupChat.payerWallet,
                 receiverWallet: groupChat.receiverWallet,
+                agentId
             };
             
             // Save the group message to the database

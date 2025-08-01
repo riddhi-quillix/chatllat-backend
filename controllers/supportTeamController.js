@@ -460,7 +460,7 @@ export const takeATicket = asyncHandler(async (req, res, next) => {
             { disputeId },
             { $set: { AssignedAgent, assignStatus: "OnWork", status: "InProcess" } }
         );
-        await createGroupChat(dispute.agreementId)
+        await createGroupChat(dispute.agreementId, agentId)
 
         return give_response(
             res,

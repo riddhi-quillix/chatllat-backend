@@ -250,26 +250,26 @@ export const getChatMessages = asyncHandler(async (req, res, next) => {
                         },
                     },
                 },
-                {
-                    $project: {
-                        _id: 1,
-                        msg: 1,
-                        image: 1,
-                        document: 1,
-                        sender: 1,
-                        read: 1,
-                        isGroup: 1,
-                        groupId: 1,
-                        disputeId: 1,
-                        agreementId: 1,
-                        groupName: 1,
-                        groupMember: 1,
-                        groupMsgReadBy: 1,
-                        createdAt: 1,
-                        payerWallet: 1,
-                        receiverWallet: 1
-                    },
-                },
+                // {
+                //     $project: {
+                //         _id: 1,
+                //         msg: 1,
+                //         image: 1,
+                //         document: 1,
+                //         sender: 1,
+                //         read: 1,
+                //         isGroup: 1,
+                //         groupId: 1,
+                //         disputeId: 1,
+                //         agreementId: 1,
+                //         groupName: 1,
+                //         groupMember: 1,
+                //         groupMsgReadBy: 1,
+                //         createdAt: 1,
+                //         payerWallet: 1,
+                //         receiverWallet: 1
+                //     },
+                // },
             ]);
         } else {
             await Chat.updateMany(
