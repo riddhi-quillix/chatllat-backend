@@ -35,17 +35,36 @@ await connectDB();
 
 const app = express();
 // app.use(cors({ origin: "*" }));
+// const allowedOrigins = [
+//     "http://localhost:5173",
+//     "http://localhost:5174",
+//     "http://localhost:5000",
+//     "http://chatllatclient.ap-south-1.elasticbeanstalk.com",
+//     "http://chatllat-server.ap-south-1.elasticbeanstalk.com",
+// ];
+
+// app.use(
+//     cors({
+//         origin: allowedOrigins,
+//         credentials: true,
+//     })
+// );
+
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "http://localhost:5000",
     "http://chatllatclient.ap-south-1.elasticbeanstalk.com",
-    "http://chatllat-server.ap-south-1.elasticbeanstalk.com",
 ];
 
 app.use(
     cors({
-        origin: allowedOrigins,
+        origin: function (origin, callback) {
+            if (allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
         credentials: true,
     })
 );

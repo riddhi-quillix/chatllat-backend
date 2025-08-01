@@ -569,6 +569,20 @@ export const cancelAgreement = asyncHandler(async (req, res, next) => {
     }
 });
 
+export const setStatusCompleted = asyncHandler(async (req, res, next) => {
+    try {
+        const {agreementId} = req.body
+
+        const agreement = await Agreement.findOne({ agreementId });
+        if (!agreement)
+            return give_response(res, 404, false, "Agreement not found");
+
+        const updatedAgreement = await Agreement.findOneAndUpdate({agreementId}, {$set: {status: "Completed"}})
+        return give_response(res, 200, true, "Status updated successfully", { updatedAgreement })
+    } catch (error) {
+        next(error);
+    }
+})
 
 export const updateStatusWhenDepositFailed = asyncHandler(async (req, res, next) => {
     try {
