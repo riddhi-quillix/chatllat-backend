@@ -16,6 +16,7 @@ import {
     takeATicket,
 } from "../controllers/supportTeamController.js";
 import { supportAuth } from "../middleware/auth.js";
+import { getAllAgentName } from "../controllers/adminController.js";
 const router = express.Router();
 
 // router.post("/signup", signup);
@@ -32,6 +33,7 @@ router.get("/ticket/details", supportAuth, ticketDetails);
 router.get("/my_ticket/details", supportAuth, myTicketDetails);
 router.get("/my_tickets/all", supportAuth, myAllTickets);
 router.post("/split/amount", supportAuth, splitDisputeAmount);
-router.post("/take_a_ticket", supportAuth, takeATicket)
+router.post("/take_a_ticket", supportAuth, takeATicket);
+router.get("/all/agent/name", supportAuth, getAllAgentName); 
 
 export default router;
