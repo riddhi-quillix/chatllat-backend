@@ -45,9 +45,10 @@ export const allTicketSchema = joi.object({
         .valid("DisputeRaised", "InProcess", "Resolved"),
     submittedBy: joi.string().optional().valid("Payer", "Receiver", "Auto"),
     AssignedAgent: joi.string().optional(),
-    agreementId: joi.string().optional(),
-    disputeId: joi.string().optional(),
-    subject: joi.string().optional(),
+    // agreementId: joi.string().optional(),
+    // disputeId: joi.string().optional(),
+    // subject: joi.string().optional(),
+    search: joi.string().optional(),
     sort: joi.string().optional().valid("ascending", "descending"),
     startDate: joi.string()
         .optional()

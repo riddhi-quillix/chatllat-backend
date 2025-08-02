@@ -36,7 +36,7 @@ export const createAdmin = asyncHandler(async (req, res, next) => {
 
         const hashPass = await bcryptjs.hash(password, 8);
         const randomId = generateadminId();
-        
+
         const admin = await Admin.create({
             email,
             password: hashPass,
@@ -193,7 +193,6 @@ export const getPaymentDetails = asyncHandler(async (req, res, next) => {
         const { disputeId } = validatedData;
 
         const dispute = await fetchPaymentDetails(disputeId);
-
         give_response(res, 200, true, "Payment details get successfully", {
             dispute,
         });
@@ -411,39 +410,39 @@ export const getAllMember = asyncHandler(async (req, res, next) => {
         const { search, sort } = req.query;
         const subAdminQuery = search
             ? [
-                  {
-                      $match: {
-                          role: "SubAdmin",
-                      },
-                  },
-                  {
-                      $addFields: {
-                          fullName: { $concat: ["$fname", " ", "$lname"] },
-                      },
-                  },
-                  {
-                      $match: {
-                          fullName: { $regex: search, $options: "i" },
-                      },
-                  },
-              ]
+                {
+                    $match: {
+                        role: "SubAdmin",
+                    },
+                },
+                {
+                    $addFields: {
+                        fullName: { $concat: ["$fname", " ", "$lname"] },
+                    },
+                },
+                {
+                    $match: {
+                        fullName: { $regex: search, $options: "i" },
+                    },
+                },
+            ]
             : [{ $match: { role: "SubAdmin" } }];
 
         const subAdmin = await Admin.aggregate(subAdminQuery);
 
         const supportQuery = search
             ? [
-                  {
-                      $addFields: {
-                          fullName: { $concat: ["$fname", " ", "$lname"] },
-                      },
-                  },
-                  {
-                      $match: {
-                          fullName: { $regex: search, $options: "i" },
-                      },
-                  },
-              ]
+                {
+                    $addFields: {
+                        fullName: { $concat: ["$fname", " ", "$lname"] },
+                    },
+                },
+                {
+                    $match: {
+                        fullName: { $regex: search, $options: "i" },
+                    },
+                },
+            ]
             : [];
 
         const support = await SupportTeam.aggregate([
@@ -539,9 +538,9 @@ export const updatePlatformFee = asyncHandler(async (req, res, next) => {
         const platformfee = await PlatformFee.findOneAndUpdate(
             { _id: platformFeeId },
             { $set: req.body },
-            { new: true, upsert: true, }
+            { new: true, upsert: true }
         );
-        
+
         give_response(res, 200, true, "Platform fee updated successfully", {
             platformfee,
         });
@@ -555,7 +554,7 @@ export const getPlatformFee = asyncHandler(async (req, res, next) => {
         const { platformFeeId } = req.query;
 
         const platformfee = await PlatformFee.findById(platformFeeId);
-        
+
         give_response(res, 200, true, "Platform fee get successfully", {
             platformfee,
         });

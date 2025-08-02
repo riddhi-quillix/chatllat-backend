@@ -83,9 +83,10 @@ export const allTickets = async (validatedData) => {
         status,
         submittedBy,
         AssignedAgent,
-        agreementId,
-        disputeId,
-        subject,
+        // agreementId,
+        // disputeId,
+        // subject,
+        search,
         sort,
         startDate,
         endDate,
@@ -110,24 +111,31 @@ export const allTickets = async (validatedData) => {
                 ...(submittedBy && {
                     disputeCreator: submittedBy,
                 }), // Filter on disputeCreator if provided
-                ...(agreementId && {
-                    agreementId: {
-                        $regex: agreementId,
-                        $options: "i",
-                    },
-                }), // Search agreementId
-                ...(disputeId && {
-                    disputeId: {
-                        $regex: disputeId,
-                        $options: "i",
-                    },
-                }), // Search disputeId
-                ...(subject && {
-                    projectTitle: {
-                        $regex: subject,
-                        $options: "i",
-                    },
-                }), // Search projectTitle
+                // ...(agreementId && {
+                //     agreementId: {
+                //         $regex: agreementId,
+                //         $options: "i",
+                //     },
+                // }), // Search agreementId
+                // ...(disputeId && {
+                //     disputeId: {
+                //         $regex: disputeId,
+                //         $options: "i",
+                //     },
+                // }), // Search disputeId
+                // ...(subject && {
+                //     projectTitle: {
+                //         $regex: subject,
+                //         $options: "i",
+                //     },
+                // }), // Search projectTitle
+                ...(search && {
+                    $or: [
+                        { agreementId: { $regex: search, $options: "i" } },
+                        { disputeId: { $regex: search, $options: "i" } },
+                        { projectTitle: { $regex: search, $options: "i" } },
+                    ],
+                }),
                 ...(AssignedAgent && {
                     AssignedAgent: {
                         $regex: AssignedAgent,
